@@ -9,7 +9,7 @@ SDAPluginの有効化/無効化
 `/sda reload`  
 SDAPluginのConfigファイルの再読み込み  
   
-### パーミッション  
+### [パーミッション](src/main/resources/plugin.yml)  
 `sda.use` -上記コマンドを使用するためのパーミッション  
 `sda.bypass` -検知をバイパスするパーミッション  
   
