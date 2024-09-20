@@ -5,6 +5,7 @@ import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,6 +15,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -23,6 +26,7 @@ public class GriefingItemListener implements Listener {
 
     private final SDAPlugin plugin;
     private final List<ItemStack> griefingItems = new ArrayList<>();
+    private String discordChannelId = null; // 初期化、もしくはデフォルト値を設定
 
     public GriefingItemListener(SDAPlugin plugin) {
         this.plugin = plugin;
@@ -83,7 +87,7 @@ public class GriefingItemListener implements Listener {
                material == Material.RED_BED || 
                material == Material.BLACK_BED;
     }
-
+    // Config.ymlの"どのアイテムを検知するか"の中にあるアイテムをインベントリ内でクリックした場合に検知します！
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (!plugin.isPluginEnabled()) return; // プラグインが無効化されている場合
@@ -99,20 +103,24 @@ public class GriefingItemListener implements Listener {
             }
         }
     }
-
+    // Config.ymlの"どのアイテムを検知するか"の中にある設置可能なブロックを検知します！
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         if (!plugin.isPluginEnabled()) return; // プラグインが無効化されている場合
         Player player = event.getPlayer();
         Block block = event.getBlock();
         List<String> detectItems = plugin.getDetectItems();
-
+        if (player.hasPermission("sda.bypass")) {
+            return;
+        }
+        
         if (detectItems.contains(block.getType().name())) {
             sendDiscordNotification(player, block.getType(), "ブロック設置");
         }
     }
-
+    //Discord検知用　埋め込み形式でDiscordのBOTから通知が来ます！
     public void sendDiscordNotification(Player player, Material item, String action) {
+        String discordChannelId = plugin.getDiscordChannelId();
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("SDA Plugin: " + action)
             .setDescription("プレイヤーが危険な行為を行いました。")
@@ -127,11 +135,11 @@ public class GriefingItemListener implements Listener {
         Plugin plugin = Bukkit.getPluginManager().getPlugin("DiscordSRV");
         if (plugin != null && plugin instanceof DiscordSRV) {
             DiscordSRV discordSRV = (DiscordSRV) plugin;
-            discordSRV.getMainGuild().getTextChannelById("YOUR-DISCORD-CHANNELID")
+            discordSRV.getMainGuild().getTextChannelById(discordChannelId)
                     .sendMessageEmbeds(embed.build()).queue();
         }
     }
-
+    //　プレイヤーの居るディメンションを特定してsendDiscordNotificationのディメンションに反映させるやつです！
     private String getDimension(org.bukkit.World.Environment environment) {
         switch (environment) {
             case NORMAL:
