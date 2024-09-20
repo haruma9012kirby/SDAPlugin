@@ -6,12 +6,12 @@
 ### 各コマンド  
 `/sda on/off`  
 SDAPluginの有効化/無効化  
-/sda reload  
+`/sda reload`  
 SDAPluginのConfigファイルの再読み込み  
   
 ### パーミッション  
-sda.use -上記コマンドを使用するためのパーミッション  
-sda.bypass -検知をバイパスするパーミッション  
+`sda.use` -上記コマンドを使用するためのパーミッション  
+`sda.bypass` -検知をバイパスするパーミッション  
   
 **注意!**  
 こちらのプラグインはBukkit/Spigot/papermcの環境のみ動作します！  
