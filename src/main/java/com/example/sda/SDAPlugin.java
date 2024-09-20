@@ -35,7 +35,7 @@ public class SDAPlugin extends JavaPlugin {
         pluginEnabled = config.getBoolean("plugin-enabled", true);
         detectItems = config.getStringList("detectable-items");
         detectBedUse = config.getBoolean("detect-bed-use", true);
-        discordChannelId = config.getString("discord-channel-id", "123456789012345678"); // デフォルトのチャンネルID
+        discordChannelId = getConfig().getString("discord-channel-id", "123456789012345678"); // デフォルトのチャンネルID
     }
 
     public boolean isPluginEnabled() {
@@ -51,7 +51,7 @@ public class SDAPlugin extends JavaPlugin {
     }
 
     public String getDiscordChannelId() {
-        return discordChannelId;
+        return discordChannelId != null ? discordChannelId : "123456789012345678"; // nullチェックでデフォルト値を返す
     }
 
     @Override
