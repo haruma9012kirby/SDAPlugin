@@ -26,5 +26,5 @@ sda.bypass -検知をバイパスするパーミッション
 # 宣伝
 ## 当プラグインの作成者が運営しているサーバーがあるので
 ## 是非入ってください！
-## [【舞雑サーバー公式】](https://x.gd/bOtWZ)
+## [【舞雑サーバー公式サイト】](https://x.gd/bOtWZ)
 ![survivalspawnpicture](https://i.gyazo.com/d2216fa5eaf169512ad4cb2f43ad841a.png)
