@@ -3,7 +3,7 @@
 このプラグインは、[**DiscordSRV**](https://github.com/DiscordSRV/DiscordSRV)のAPIを使用した非公式のプラグインです。  
 基本的にDiscordSRVの設定を済ませ、confit.ymlにチャンネル名を設定すれば動作します。  
 
-### [各コマンド](SDAplugin/src/main/resouces/config.yml)  
+### [各コマンド](src/main/resouces/config.yml)  
 `/sda on/off`  
 SDAPluginの有効化/無効化  
 `/sda reload`  
