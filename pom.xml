@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <groupId>com.example.sda</groupId>
+   <artifactId>SDA</artifactId>
+   <version>1.1</version>
+
+   <name>SDA</name>
+   <description>A plugin to detect griefing items and notify Discord</description>
+
+   <dependencies>
+    <!-- Paper API -->
+    <dependency>
+        <groupId>io.papermc.paper</groupId>
+        <artifactId>paper-api</artifactId>
+        <version>1.21.1-R0.1-SNAPSHOT</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <!-- DiscordSRV -->
+    <dependency>
+        <groupId>com.discordsrv</groupId>
+        <artifactId>discordsrv</artifactId>
+        <version>1.26.0</version>
+        <scope>provided</scope>
+    </dependency>
+</dependencies>
+
+<repositories>
+    <repository>
+        <id>scarsz-releases</id>
+        <url>https://repo.scarsz.me/releases</url>
+    </repository>
+
+    <repository>
+        <id>papermc-repo</id>
+        <url>https://papermc.io/repo/repository/maven-public/</url>
+    </repository>
+</repositories>
+</project>
