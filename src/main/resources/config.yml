@@ -4,8 +4,7 @@ detectable-items: # どのアイテムを検知するか
   - LAVA_BUCKET
   - FLINT_AND_STEEL
   - TNT
-  - ENDER_CRYSTAL
-  - MAGMA_BLOCK
+  - END_CRYSTAL
   - COMMAND_BLOCK
 detect-bed-use: true # ベッドの使用検知を有効にするかどうか
 discord-channel-id: 'YOUR-DISCORD-CHANNEL-ID' 　　　# ここにDiscordのチャンネルIDを入力
