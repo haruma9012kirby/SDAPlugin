@@ -8,4 +8,4 @@ detectable-items: # どのアイテムを検知するか
   - MAGMA_BLOCK
   - COMMAND_BLOCK
 detect-bed-use: true # ベッドの使用検知を有効にするかどうか
-discord-channel-id: 'YOUR-DISCORD-CHANNEL-ID' # まだここは使えません！アップデートを行うのでお待ち下さい！
+discord-channel-id: 'YOUR-DISCORD-CHANNEL-ID' 　　　# ここにDiscordのチャンネルIDを入力
