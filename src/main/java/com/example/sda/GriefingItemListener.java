@@ -127,7 +127,7 @@ public class GriefingItemListener implements Listener {
         Plugin plugin = Bukkit.getPluginManager().getPlugin("DiscordSRV");
         if (plugin != null && plugin instanceof DiscordSRV) {
             DiscordSRV discordSRV = (DiscordSRV) plugin;
-            discordSRV.getMainGuild().getTextChannelById("1281144158626648207")
+            discordSRV.getMainGuild().getTextChannelById("YOUR-DISCORD-CHANNELID")
                     .sendMessageEmbeds(embed.build()).queue();
         }
     }
