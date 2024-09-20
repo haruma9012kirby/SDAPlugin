@@ -1,0 +1,11 @@
+plugin-enabled: true
+detectable-items: # どのアイテムを検知するか
+  - WITHER_SKELETON_SKULL
+  - LAVA_BUCKET
+  - FLINT_AND_STEEL
+  - TNT
+  - ENDER_CRYSTAL
+  - MAGMA_BLOCK
+  - COMMAND_BLOCK
+detect-bed-use: true # ベッドの使用検知を有効にするかどうか
+discord-channel-id: 'YOUR-DISCORD-CHANNEL-ID'
