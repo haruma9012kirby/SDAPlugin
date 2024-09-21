@@ -1,0 +1,14 @@
+    @EventHandler
+    public void onPlayerUseFlintAndSteel(PlayerInteractEvent event) {
+        if (!plugin.isPluginEnabled()) return; // プラグインが無効化されている場合
+        if (!plugin.isblockignite()) return; //ブロック着火が無効化されている場合
+        Player player = event.getPlayer();
+        ItemStack item = event.getItem();
+
+        if (item != null && item.getType() == Material.FLINT_AND_STEEL) {
+            Block block = event.getClickedBlock();
+        if (block != null) {
+            sendDiscordNotification(player, item.getType(), "ブロック着火");
+        }
+      }
+    }
