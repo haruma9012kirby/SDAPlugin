@@ -130,7 +130,7 @@ public class GriefingItemListener implements Listener {
         if (item != null && item.getType() == Material.FLINT_AND_STEEL) {
             Block block = event.getClickedBlock();
         if (block != null) {
-            sendDiscordNotification(player, item.getType(), "ブロック着火");
+            sendDiscordNotification(player, block.getType(), "ブロック着火");
         }
       }
     }
