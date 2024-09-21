@@ -119,6 +119,7 @@ public class GriefingItemListener implements Listener {
             sendDiscordNotification(player, block.getType(), "ブロック設置");
         }
     }
+    // ブロック着火の検知を行うやつです
     @EventHandler
     public void onPlayerUseFlintAndSteel(PlayerInteractEvent event) {
         if (!plugin.isPluginEnabled()) return; // プラグインが無効化されている場合
