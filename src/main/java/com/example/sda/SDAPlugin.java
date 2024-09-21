@@ -15,6 +15,7 @@ public class SDAPlugin extends JavaPlugin {
     private List<String> detectItems;
     private boolean detectBedUse;
     private String discordChannelId;
+    private boolean blockignite;
 
     @Override
     public void onEnable() {

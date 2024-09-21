@@ -12,4 +12,5 @@ detectable-items:
 detect-bed-use: true 
 # ここにDiscordのチャンネルIDを入力
 discord-channel-id: 'YOUR-DISCORD-CHANNEL-ID' 
+# ブロックの着火を検知
 detect-ignite-block: true

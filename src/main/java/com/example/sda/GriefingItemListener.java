@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -121,7 +122,7 @@ public class GriefingItemListener implements Listener {
     @EventHandler
     public void onPlayerUseFlintAndSteel(PlayerInteractEvent event) {
         if (!plugin.isPluginEnabled()) return; // プラグインが無効化されている場合
-        if (!plugin.isisblockignite()) return; //ブロック着火が無効化されている場合
+        if (!plugin.isblockignite()) return; //ブロック着火が無効化されている場合
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
 
