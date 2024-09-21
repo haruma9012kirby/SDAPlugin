@@ -118,6 +118,20 @@ public class GriefingItemListener implements Listener {
             sendDiscordNotification(player, block.getType(), "ブロック設置");
         }
     }
+    @EventHandler
+    public void onPlayerUseFlintAndSteel(PlayerInteractEvent event) {
+        if (!plugin.isPluginEnabled()) return; // プラグインが無効化されている場合
+        if (!plugin.isisblockignite()) return; //ブロック着火が無効化されている場合
+        Player player = event.getPlayer();
+        ItemStack item = event.getItem();
+
+        if (item != null && item.getType() == Material.FLINT_AND_STEEL) {
+            Block block = event.getClickedBlock();
+        if (block != null) {
+            sendDiscordNotification(player, item.getType(), "ブロック着火");
+        }
+      }
+    }
     //Discord検知用　埋め込み形式でDiscordのBOTから通知が来ます！
     public void sendDiscordNotification(Player player, Material item, String action) {
         String discordChannelId = plugin.getDiscordChannelId();

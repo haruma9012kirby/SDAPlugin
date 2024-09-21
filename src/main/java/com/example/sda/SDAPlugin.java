@@ -36,6 +36,7 @@ public class SDAPlugin extends JavaPlugin {
         detectItems = config.getStringList("detectable-items");
         detectBedUse = config.getBoolean("detect-bed-use", true);
         discordChannelId = getConfig().getString("discord-channel-id", "123456789012345678"); // デフォルトのチャンネルID
+        blockignite = config.getBoolean("detect-ignite-block", true);
     }
 
     public boolean isPluginEnabled() {
@@ -52,6 +53,10 @@ public class SDAPlugin extends JavaPlugin {
 
     public String getDiscordChannelId() {
         return discordChannelId != null ? discordChannelId : "123456789012345678"; // nullチェックでデフォルト値を返す
+    }
+
+    public boolean isblockignite() {
+        return blockignite;
     }
 
     @Override
