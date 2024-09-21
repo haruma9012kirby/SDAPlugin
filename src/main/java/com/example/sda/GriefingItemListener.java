@@ -114,7 +114,6 @@ public class GriefingItemListener implements Listener {
         if (player.hasPermission("sda.bypass")) {
             return;
         }
-        
         if (detectItems.contains(block.getType().name())) {
             sendDiscordNotification(player, block.getType(), "ブロック設置");
         }
@@ -126,7 +125,9 @@ public class GriefingItemListener implements Listener {
         if (!plugin.isblockignite()) return; //ブロック着火が無効化されている場合
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
-
+        if (player.hasPermission("sda.bypass")) {
+            return;
+        }
         if (item != null && item.getType() == Material.FLINT_AND_STEEL) {
             Block block = event.getClickedBlock();
         if (block != null) {
