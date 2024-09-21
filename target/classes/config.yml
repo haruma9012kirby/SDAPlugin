@@ -1,0 +1,16 @@
+# プラグインの有効化/無効化
+plugin-enabled: true
+# どのアイテムを検知するか
+detectable-items: 
+  - WITHER_SKELETON_SKULL
+  - LAVA_BUCKET
+  - FLINT_AND_STEEL
+  - TNT
+  - END_CRYSTAL
+  - COMMAND_BLOCK
+# ベッドの使用検知を有効にするかどうか
+detect-bed-use: true 
+# ここにDiscordのチャンネルIDを入力
+discord-channel-id: 'YOUR-DISCORD-CHANNEL-ID' 
+# ブロックの着火を検知
+detect-ignite-block: true

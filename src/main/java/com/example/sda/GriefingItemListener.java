@@ -17,7 +17,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -118,21 +117,6 @@ public class GriefingItemListener implements Listener {
         if (detectItems.contains(block.getType().name())) {
             sendDiscordNotification(player, block.getType(), "ブロック設置");
         }
-    }
-    // ブロック着火の検知を行うやつです
-    @EventHandler
-    public void onPlayerUseFlintAndSteel(PlayerInteractEvent event) {
-        if (!plugin.isPluginEnabled()) return; // プラグインが無効化されている場合
-        if (!plugin.isblockignite()) return; //ブロック着火が無効化されている場合
-        Player player = event.getPlayer();
-        ItemStack item = event.getItem();
-
-        if (item != null && item.getType() == Material.FLINT_AND_STEEL) {
-            Block block = event.getClickedBlock();
-        if (block != null) {
-            sendDiscordNotification(player, item.getType(), "ブロック着火");
-        }
-      }
     }
     //Discord検知用　埋め込み形式でDiscordのBOTから通知が来ます！
     public void sendDiscordNotification(Player player, Material item, String action) {
