@@ -72,21 +72,21 @@ public class GriefingItemListener implements Listener {
     // 色付きベッドかどうかを判定するメソッド
     private boolean isBedMaterial(Material material) {
         return material == Material.WHITE_BED || 
-               material == Material.ORANGE_BED || 
-               material == Material.MAGENTA_BED || 
-               material == Material.LIGHT_BLUE_BED || 
-               material == Material.YELLOW_BED || 
-               material == Material.LIME_BED || 
-               material == Material.PINK_BED || 
-               material == Material.GRAY_BED || 
-               material == Material.LIGHT_GRAY_BED || 
-               material == Material.CYAN_BED || 
-               material == Material.PURPLE_BED || 
-               material == Material.BLUE_BED || 
-               material == Material.BROWN_BED || 
-               material == Material.GREEN_BED || 
-               material == Material.RED_BED || 
-               material == Material.BLACK_BED;
+        material == Material.ORANGE_BED || 
+        material == Material.MAGENTA_BED || 
+        material == Material.LIGHT_BLUE_BED || 
+        material == Material.YELLOW_BED || 
+        material == Material.LIME_BED || 
+        material == Material.PINK_BED || 
+        material == Material.GRAY_BED || 
+        material == Material.LIGHT_GRAY_BED || 
+        material == Material.CYAN_BED || 
+        material == Material.PURPLE_BED || 
+        material == Material.BLUE_BED || 
+        material == Material.BROWN_BED || 
+        material == Material.GREEN_BED || 
+        material == Material.RED_BED || 
+        material == Material.BLACK_BED;
     }
     // Config.ymlの"どのアイテムを検知するか"の中にあるアイテムをインベントリ内でクリックした場合に検知します！
     @EventHandler
@@ -130,43 +130,52 @@ public class GriefingItemListener implements Listener {
         }
         if (item != null && item.getType() == Material.FLINT_AND_STEEL) {
             Block block = event.getClickedBlock();
-        if (block != null) {
-            sendDiscordNotification(player, block.getType(), "ブロック着火");
+            if (block != null) {
+                sendDiscordNotification(player, block.getType(), "ブロック着火");
+            }
         }
-      }
     }
     //Discord検知用　埋め込み形式でDiscordのBOTから通知が来ます！
     public void sendDiscordNotification(Player player, Material item, String action) {
         String discordChannelId = plugin.getDiscordChannelId();
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("SDA Plugin: " + action)
-            .setDescription("プレイヤーが危険な行為を行いました。")
-            .setColor(Color.RED)
-            .addField("プレイヤー名", player.getName(), false)
-            .addField("UUID", player.getUniqueId().toString(), false)
-            .addField("座標", "X: " + player.getLocation().getBlockX() + " Y: " + player.getLocation().getBlockY() + " Z: " + player.getLocation().getBlockZ(), false)
-            .addField("ディメンション", getDimension(player.getWorld().getEnvironment()), false)
-            .addField("アイテム", item.name(), false)
-            .setFooter("SDA Plugin", null);
+        .setDescription("プレイヤーが危険な行為を行いました。")
+        .setColor(getEmbedColor(item))
+        .addField("プレイヤー名", player.getName(), false)
+        .addField("UUID", player.getUniqueId().toString(), false)
+        .addField("座標", "X: " + player.getLocation().getBlockX() + " Y: " + player.getLocation().getBlockY() + " Z: " + player.getLocation().getBlockZ(), false)
+        .addField("ディメンション", getDimension(player.getWorld().getEnvironment()), false)
+        .addField("アイテム", item.name(), false)
+        .setFooter("SDA Plugin", null);
 
         Plugin plugin = Bukkit.getPluginManager().getPlugin("DiscordSRV");
         if (plugin != null && plugin instanceof DiscordSRV) {
             DiscordSRV discordSRV = (DiscordSRV) plugin;
             discordSRV.getMainGuild().getTextChannelById(discordChannelId)
-                    .sendMessageEmbeds(embed.build()).queue();
+            .sendMessageEmbeds(embed.build()).queue();
+        }
+    }
+    // アイテムに応じて埋め込みの色を変更するメソッド
+    private Color getEmbedColor(Material item) {
+        switch (item) {
+        case TNT:
+            return Color.RED; // 危険なアイテムは赤色
+        default:
+            return Color.WHITE; // デフォルトは白色
         }
     }
     //　プレイヤーの居るディメンションを特定してsendDiscordNotificationのディメンションに反映させるやつです！
     private String getDimension(org.bukkit.World.Environment environment) {
         switch (environment) {
-            case NORMAL:
-                return "オーバーワールド";
-            case NETHER:
-                return "ネザー";
-            case THE_END:
-                return "エンド";
-            default:
-                return "不明";
+        case NORMAL:
+            return "オーバーワールド";
+        case NETHER:
+            return "ネザー";
+        case THE_END:
+            return "エンド";
+        default:
+            return "不明";
         }
     }
 }
