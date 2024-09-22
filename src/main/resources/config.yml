@@ -1,13 +1,19 @@
 # プラグインの有効化/無効化
 plugin-enabled: true
-# どのアイテムを検知するか
-detectable-items: 
-  - WITHER_SKELETON_SKULL
-  - LAVA_BUCKET
-  - FLINT_AND_STEEL
-  - TNT
-  - END_CRYSTAL
-  - COMMAND_BLOCK
+# どのアイテムを検知するかとその危険度
+detectable-items:
+  - item: WITHER_SKELETON_SKULL
+    danger-level: 3
+  - item: LAVA_BUCKET
+    danger-level: 4
+  - item: FLINT_AND_STEEL
+    danger-level: 2
+  - item: TNT
+    danger-level: 5
+  - item: END_CRYSTAL
+    danger-level: 4
+  - item: COMMAND_BLOCK
+    danger-level: 5
 # ベッドの使用検知を有効にするかどうか
 detect-bed-use: true 
 # ここにDiscordのチャンネルIDを入力

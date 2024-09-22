@@ -18,16 +18,20 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class GriefingItemListener implements Listener {
 
     private final SDAPlugin plugin;
     private final List<ItemStack> griefingItems = new ArrayList<>();
     private String discordChannelId = null; // 初期化、もしくはデフォルト値を設定
+    private final Map<Material, Integer> itemDangerLevels = new HashMap<>();
 
     public GriefingItemListener(SDAPlugin plugin) {
         this.plugin = plugin;
@@ -36,12 +40,20 @@ public class GriefingItemListener implements Listener {
 
     private void loadGriefingItems() {
         FileConfiguration config = plugin.getConfig();
-        List<String> items = config.getStringList("detectable-items");
+        List<Map<?, ?>> items = config.getMapList("detectable-items");
 
-        for (String itemName : items) {
+        for (Map<?, ?> itemData : items) {
+            String itemName = (String) itemData.get("item");
+            Integer dangerLevel = (Integer) itemData.get("danger-level");
+
             try {
                 Material material = Material.valueOf(itemName.toUpperCase());
                 griefingItems.add(new ItemStack(material));
+                if (dangerLevel == null) {
+                }
+
+            // 危険度を保持するマップに追加
+                itemDangerLevels.put(material, dangerLevel);
             } catch (IllegalArgumentException e) {
                 Bukkit.getLogger().warning(itemName + " は有効なアイテム名ではありません。");
             }
@@ -64,7 +76,8 @@ public class GriefingItemListener implements Listener {
             Material bedMaterial = event.getBed().getType(); // ベッドの種類を取得
 
             if (isBedMaterial(bedMaterial)) {
-                sendDiscordNotification(player, bedMaterial, "ベッド使用");
+                int dangerLevel = 3;
+                sendDiscordNotification(player, bedMaterial, "ベッド使用", dangerLevel);
             }
         }
     }
@@ -97,16 +110,21 @@ public class GriefingItemListener implements Listener {
             if (player.hasPermission("sda.bypass")) {
                 return;
             }
-
             ItemStack item = event.getCurrentItem();
-            if (item != null && griefingItems.stream().anyMatch(i -> i.getType() == item.getType())) {
-                sendDiscordNotification(player, item.getType(), "アイテム所持");
+            if (item != null) {
+                Material itemType = item.getType();
+
+            // 対象のアイテムが検知アイテムリストにあるかどうか確認
+                if (itemDangerLevels.containsKey(itemType)) {
+                int dangerLevel = itemDangerLevels.get(itemType); // 危険度を取得
+                sendDiscordNotification(player, itemType, "アイテム所持", dangerLevel);
             }
         }
     }
+}
     // Config.ymlの"どのアイテムを検知するか"の中にある設置可能なブロックを検知します！
-    @EventHandler
-    public void onBlockPlace(BlockPlaceEvent event) {
+@EventHandler
+public void onBlockPlace(BlockPlaceEvent event) {
         if (!plugin.isPluginEnabled()) return; // プラグインが無効化されている場合
         Player player = event.getPlayer();
         Block block = event.getBlock();
@@ -114,8 +132,12 @@ public class GriefingItemListener implements Listener {
         if (player.hasPermission("sda.bypass")) {
             return;
         }
-        if (detectItems.contains(block.getType().name())) {
-            sendDiscordNotification(player, block.getType(), "ブロック設置");
+        Material blockType = block.getType();
+
+        // 対象のブロックが検知アイテムリストにあるかどうか確認
+        if (itemDangerLevels.containsKey(blockType)) {
+            int dangerLevel = itemDangerLevels.get(blockType); // 危険度を取得
+            sendDiscordNotification(player, blockType, "ブロック設置", dangerLevel);
         }
     }
     // ブロックの着火を検知します！
@@ -130,18 +152,25 @@ public class GriefingItemListener implements Listener {
         }
         if (item != null && item.getType() == Material.FLINT_AND_STEEL) {
             Block block = event.getClickedBlock();
+
             if (block != null) {
-                sendDiscordNotification(player, block.getType(), "ブロック着火");
+                Material blockType = block.getType();
+                int dangerLevel = itemDangerLevels.getOrDefault(blockType, 1); // デフォルト値を1に設定
+
+            // 対象のブロックが検知アイテムリストにあるかどうか確認
+                if (itemDangerLevels.containsKey(blockType)) {
+                    sendDiscordNotification(player, blockType, "ブロック着火", dangerLevel);
+                }
             }
         }
     }
     //Discord検知用　埋め込み形式でDiscordのBOTから通知が来ます！
-    public void sendDiscordNotification(Player player, Material item, String action) {
+    public void sendDiscordNotification(Player player, Material item, String action, int dangerLevel) {
         String discordChannelId = plugin.getDiscordChannelId();
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("SDA Plugin: " + action)
         .setDescription("プレイヤーが危険な行為を行いました。")
-        .setColor(getEmbedColor(item))
+        .setColor(getEmbedColor(dangerLevel))
         .addField("プレイヤー名", player.getName(), false)
         .addField("UUID", player.getUniqueId().toString(), false)
         .addField("座標", "X: " + player.getLocation().getBlockX() + " Y: " + player.getLocation().getBlockY() + " Z: " + player.getLocation().getBlockZ(), false)
@@ -156,26 +185,32 @@ public class GriefingItemListener implements Listener {
             .sendMessageEmbeds(embed.build()).queue();
         }
     }
-    // アイテムに応じて埋め込みの色を変更するメソッド
-    private Color getEmbedColor(Material item) {
-        switch (item) {
-        case TNT:
-            return Color.RED; // 危険なアイテムは赤色
-        default:
-            return Color.WHITE; // デフォルトは白色
+    // アイテムの危険度に応じた色を返すメソッド
+    private Color getEmbedColor(int dangerLevel) {
+        switch (dangerLevel) {
+        case 5:
+                return Color.MAGENTA; // 最高危険度
+            case 4:
+                return Color.RED; // 高危険度
+            case 3:
+                return Color.ORANGE; // 中危険度
+            case 2:
+                return Color.YELLOW; // 低危険度
+            default:
+                return Color.WHITE; 
+            }
         }
-    }
     //　プレイヤーの居るディメンションを特定してsendDiscordNotificationのディメンションに反映させるやつです！
-    private String getDimension(org.bukkit.World.Environment environment) {
-        switch (environment) {
-        case NORMAL:
-            return "オーバーワールド";
-        case NETHER:
-            return "ネザー";
-        case THE_END:
-            return "エンド";
-        default:
-            return "不明";
+        private String getDimension(org.bukkit.World.Environment environment) {
+            switch (environment) {
+            case NORMAL:
+                return "オーバーワールド";
+            case NETHER:
+                return "ネザー";
+            case THE_END:
+                return "エンド";
+            default:
+                return "不明";
+            }
         }
     }
-}

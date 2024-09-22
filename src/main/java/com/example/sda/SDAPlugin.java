@@ -23,6 +23,7 @@ public class SDAPlugin extends JavaPlugin {
         loadConfigValues();
         getLogger().info("SDA Plugin Enabled");
         Bukkit.getPluginManager().registerEvents(new GriefingItemListener(this), this);
+
     }
 
     @Override
