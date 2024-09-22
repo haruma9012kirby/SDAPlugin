@@ -38,7 +38,7 @@ public class GriefingItemListener implements Listener {
         loadGriefingItems();
     }
 
-    private void loadGriefingItems() {
+    public void loadGriefingItems() {
         FileConfiguration config = plugin.getConfig();
         List<Map<?, ?>> items = config.getMapList("detectable-items");
 

@@ -16,6 +16,7 @@ public class SDAPlugin extends JavaPlugin {
     private boolean detectBedUse;
     private String discordChannelId;
     private boolean blockignite;
+    public GriefingItemListener griefingItemListener;
 
     @Override
     public void onEnable() {
@@ -85,6 +86,7 @@ public class SDAPlugin extends JavaPlugin {
                 } else if (args[0].equalsIgnoreCase("reload")) {
                     reloadConfig();
                     loadConfigValues();
+                    griefingItemListener.loadGriefingItems(); 
                     sender.sendMessage("SDA Plugin configuration reloaded.");
                     return true;
                 }
