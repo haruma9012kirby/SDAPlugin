@@ -82,7 +82,7 @@ public class SDAPlugin extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (label.equalsIgnoreCase("sda")) {
             if (!sender.hasPermission("sda.use")) { // パーミッションのチェック
-                sender.sendMessage("§cYou don't have permission to use this command.");
+                sender.sendMessage("§cあなたはこのコマンドを実行する権限を持っていません。");
                 return true;
             }
 
@@ -91,18 +91,18 @@ public class SDAPlugin extends JavaPlugin {
                     pluginEnabled = true;
                     getConfig().set("plugin-enabled", true);
                     saveConfig();
-                    sender.sendMessage("SDA Plugin is now enabled.");
+                    sender.sendMessage("&a[SDA]SDAPluginが有効化されました");
                     return true;
                 } else if (args[0].equalsIgnoreCase("off")) {
                     pluginEnabled = false;
                     getConfig().set("plugin-enabled", false);
                     saveConfig();
-                    sender.sendMessage("SDA Plugin is now disabled.");
+                    sender.sendMessage("&a[SDA]SDAPluginが無効化されました");
                     return true;
                 } else if (args[0].equalsIgnoreCase("reload")) {
                     reloadConfig();
                     loadConfigValues();
-                    sender.sendMessage("SDA Plugin configuration reloaded.");
+                    sender.sendMessage("§a[SDA]configファイルがリロードされました!");
                     // "discord-channel-id" が "YOUR-DISCORD-CHANNEL-ID" のままの場合に警告
                     if (getDiscordChannelId().equals("YOUR-DISCORD-CHANNEL-ID")) {
                     sender.sendMessage("§c[SDA] 警告: config.ymlでDiscordチャンネルIDが設定されていません！");// 送信者に警告
