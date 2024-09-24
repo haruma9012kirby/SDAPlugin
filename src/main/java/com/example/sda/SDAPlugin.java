@@ -97,7 +97,7 @@ public class SDAPlugin extends JavaPlugin {
                     pluginEnabled = false;
                     getConfig().set("plugin-enabled", false);
                     saveConfig();
-                    sender.sendMessage("§a[SDA]SDAPluginが無効化されました");
+                    sender.sendMessage("§c[SDA]SDAPluginが無効化されました");
                     return true;
                 } else if (args[0].equalsIgnoreCase("reload")) {
                     reloadConfig();
