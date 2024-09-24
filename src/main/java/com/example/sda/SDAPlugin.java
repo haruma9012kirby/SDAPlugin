@@ -54,14 +54,11 @@ public class SDAPlugin extends JavaPlugin {
         return detectBedUse;
     }
 
-    // チャンネルIDを取得するメソッド
     public String getDiscordChannelId() {
-    // デフォルト値のままであれば null を返す
-        if ("YOUR-DISCORD-CHANNEL-ID".equals(discordChannelId)) {
-            return null;
-        }
-        return discordChannelId;
+    // null チェックがされていることを確認する
+        return discordChannelId != null ? discordChannelId : "YOUR-DISCORD-CHANNEL-ID";
     }
+
     // discord-channel-id のチェックを追加するメソッド
     public void checkDiscordChannelId() {
         if ("YOUR-DISCORD-CHANNEL-ID".equals(discordChannelId)) {
@@ -111,10 +108,10 @@ public class SDAPlugin extends JavaPlugin {
                     sender.sendMessage("§c[SDA] 警告: config.ymlでDiscordチャンネルIDが設定されていません！");// 送信者に警告
                     getLogger().warning("DiscordチャンネルIDが設定されていません！"); // コンソールに警告
                 }
-                    return true;
-                }
+                return true;
             }
         }
-        return false;
     }
+    return false;
+}
 }
