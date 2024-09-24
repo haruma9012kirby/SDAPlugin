@@ -24,7 +24,7 @@ public class SDAPlugin extends JavaPlugin {
         checkDiscordChannelId(); // チャンネルIDのチェック
         getLogger().info("SDA Plugin Enabled");
         Bukkit.getPluginManager().registerEvents(new GriefingItemListener(this), this);
-
+        getLogger().info("Config loaded: pluginEnabled=" + pluginEnabled + ", detectBedUse=" + detectBedUse + ", discordChannelId=" + discordChannelId + ", detectblockignite=" + blockignite);
     }
 
     @Override

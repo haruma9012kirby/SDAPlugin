@@ -58,6 +58,10 @@ public class GriefingItemListener implements Listener {
                 Bukkit.getLogger().warning(itemName + " は有効なアイテム名ではありません。");
             }
         }
+         // 読み込んだアイテムをログに出力
+        for (Material material : griefingItems.stream().map(ItemStack::getType).toList()) {
+            Bukkit.getLogger().info("Loaded item: " + material);
+        }
     }
 
     @EventHandler
@@ -104,74 +108,65 @@ public class GriefingItemListener implements Listener {
     // Config.ymlの"どのアイテムを検知するか"の中にあるアイテムをインベントリ内でクリックした場合に検知します！
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!plugin.isPluginEnabled()) return; // プラグインが無効化されている場合
-        if (event.getWhoClicked() instanceof Player) {
-            Player player = (Player) event.getWhoClicked();
-            if (player.hasPermission("sda.bypass")) {
-                return;
-            }
-            ItemStack item = event.getCurrentItem();
-            if (item != null) {
-                Material itemType = item.getType();
-
-            // 対象のアイテムが検知アイテムリストにあるかどうか確認
-                if (itemDangerLevels.containsKey(itemType)) {
-                int dangerLevel = itemDangerLevels.get(itemType); // 危険度を取得
-                sendDiscordNotification(player, itemType, "アイテム所持", dangerLevel);
+    if (!plugin.isPluginEnabled()) return; // プラグインが無効化されている場合
+    if (event.getWhoClicked() instanceof Player) {
+        Player player = (Player) event.getWhoClicked();
+        if (player.hasPermission("sda.bypass")) {
+            return;
+        }
+        ItemStack item = event.getCurrentItem();
+        if (item != null) {
+            Material itemType = item.getType();
+            // 危険度取得
+            Integer dangerLevel = itemDangerLevels.get(itemType); 
+            if (dangerLevel != null) {
+            sendDiscordNotification(player, itemType, "アイテム所持", dangerLevel);
             }
         }
     }
 }
-    // Config.ymlの"どのアイテムを検知するか"の中にある設置可能なブロックを検知します！
-@EventHandler
-public void onBlockPlace(BlockPlaceEvent event) {
-        if (!plugin.isPluginEnabled()) return; // プラグインが無効化されている場合
-        Player player = event.getPlayer();
-        Block block = event.getBlock();
-        List<String> detectItems = plugin.getDetectItems();
-        if (player.hasPermission("sda.bypass")) {
-            return;
-        }
-        Material blockType = block.getType();
 
-        // 対象のブロックが検知アイテムリストにあるかどうか確認
-        if (itemDangerLevels.containsKey(blockType)) {
-            int dangerLevel = itemDangerLevels.get(blockType); // 危険度を取得
-            sendDiscordNotification(player, blockType, "ブロック設置", dangerLevel);
-        }
+    // Config.ymlの"どのアイテムを検知するか"の中にある設置可能なブロックを検知します！
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+    if (!plugin.isPluginEnabled()) return; // プラグインが無効化されている場合
+    Player player = event.getPlayer();
+    Block block = event.getBlock();
+    if (player.hasPermission("sda.bypass")) {
+        return;
     }
+    Material blockType = block.getType();
+
+    // 対象のブロックが検知アイテムリストにあるかどうか確認
+    Integer dangerLevel = itemDangerLevels.get(blockType); // 危険度を取得
+    if (dangerLevel != null) {
+        sendDiscordNotification(player, blockType, "ブロック設置", dangerLevel);
+    }
+}
     // ブロックの着火を検知します！
     @EventHandler
     public void onPlayerUseFlintAndSteel(PlayerInteractEvent event) {
-        if (!plugin.isPluginEnabled()) return; // プラグインが無効化されている場合
-        if (!plugin.isblockignite()) return; //ブロック着火が無効化されている場合
-        Player player = event.getPlayer();
-        ItemStack item = event.getItem();
-        if (player.hasPermission("sda.bypass")) {
-            return;
-        }
-        if (item != null && item.getType() == Material.FLINT_AND_STEEL) {
-            Block block = event.getClickedBlock();
+    if (!plugin.isPluginEnabled()) return; // プラグインが無効化されている場合
+    if (!plugin.isblockignite()) return; //ブロック着火が無効化されている場合
+    Player player = event.getPlayer();
+    ItemStack item = event.getItem();
+    if (player.hasPermission("sda.bypass")) {
+        return;
+    }
+    if (item != null && item.getType() == Material.FLINT_AND_STEEL) {
+        Block block = event.getClickedBlock();
 
-            if (block != null) {
-                Material blockType = block.getType();
-                int dangerLevel = itemDangerLevels.getOrDefault(blockType, 1); // デフォルト値を1に設定
-
+        if (block != null) {
+            Material blockType = block.getType();
             // 対象のブロックが検知アイテムリストにあるかどうか確認
-                if (itemDangerLevels.containsKey(blockType)) {
-                    sendDiscordNotification(player, blockType, "ブロック着火", dangerLevel);
-                }
+            Integer dangerLevel = itemDangerLevels.getOrDefault(blockType, 0); // デフォルトを0に設定
+            sendDiscordNotification(player, blockType, "ブロック着火", dangerLevel);
             }
         }
     }
     //Discord検知用　埋め込み形式でDiscordのBOTから通知が来ます！
     public void sendDiscordNotification(Player player, Material item, String action, int dangerLevel) {
-            // チャンネルIDが正しく設定されているかを確認
-        if (plugin.getDiscordChannelId() == null) {
-        // チャンネルIDが設定されていない場合、コンソールに警告を出す
-            plugin.getLogger().warning("config.ymlでDiscordチャンネルIDが設定されていません！");
-        return; // 通知を送信せずに処理を中断
-    }
+    Bukkit.getLogger().info("Sending Discord notification for action: " + action);
     EmbedBuilder embed = new EmbedBuilder();
     embed.setTitle("SDA Plugin: " + action)
     .setDescription("プレイヤーが危険な行為を行いました。")
@@ -191,7 +186,7 @@ public void onBlockPlace(BlockPlaceEvent event) {
     }
 }
     // アイテムの危険度に応じた色を返すメソッド
-private Color getEmbedColor(int dangerLevel) {
+    private Color getEmbedColor(int dangerLevel) {
     switch (dangerLevel) {
     case 5:
                 return Color.MAGENTA; // 最高危険度
