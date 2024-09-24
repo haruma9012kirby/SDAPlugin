@@ -166,29 +166,34 @@ public void onBlockPlace(BlockPlaceEvent event) {
     }
     //Discord検知用　埋め込み形式でDiscordのBOTから通知が来ます！
     public void sendDiscordNotification(Player player, Material item, String action, int dangerLevel) {
-        String discordChannelId = plugin.getDiscordChannelId();
-        EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle("SDA Plugin: " + action)
-        .setDescription("プレイヤーが危険な行為を行いました。")
-        .setColor(getEmbedColor(dangerLevel))
-        .addField("プレイヤー名", player.getName(), false)
-        .addField("UUID", player.getUniqueId().toString(), false)
-        .addField("座標", "X: " + player.getLocation().getBlockX() + " Y: " + player.getLocation().getBlockY() + " Z: " + player.getLocation().getBlockZ(), false)
-        .addField("ディメンション", getDimension(player.getWorld().getEnvironment()), false)
-        .addField("アイテム", item.name(), false)
-        .setFooter("SDA Plugin", null);
-
-        Plugin plugin = Bukkit.getPluginManager().getPlugin("DiscordSRV");
-        if (plugin != null && plugin instanceof DiscordSRV) {
-            DiscordSRV discordSRV = (DiscordSRV) plugin;
-            discordSRV.getMainGuild().getTextChannelById(discordChannelId)
-            .sendMessageEmbeds(embed.build()).queue();
-        }
+            // チャンネルIDが正しく設定されているかを確認
+        if (plugin.getDiscordChannelId() == null) {
+        // チャンネルIDが設定されていない場合、コンソールに警告を出す
+            plugin.getLogger().warning("config.ymlでDiscordチャンネルIDが設定されていません！");
+        return; // 通知を送信せずに処理を中断
     }
+    EmbedBuilder embed = new EmbedBuilder();
+    embed.setTitle("SDA Plugin: " + action)
+    .setDescription("プレイヤーが危険な行為を行いました。")
+    .setColor(getEmbedColor(dangerLevel))
+    .addField("プレイヤー名", player.getName(), false)
+    .addField("UUID", player.getUniqueId().toString(), false)
+    .addField("座標", "X: " + player.getLocation().getBlockX() + " Y: " + player.getLocation().getBlockY() + " Z: " + player.getLocation().getBlockZ(), false)
+    .addField("ディメンション", getDimension(player.getWorld().getEnvironment()), false)
+    .addField("アイテム", item.name(), false)
+    .setFooter("SDA Plugin", null);
+
+    Plugin plugin = Bukkit.getPluginManager().getPlugin("DiscordSRV");
+    if (plugin != null && plugin instanceof DiscordSRV) {
+        DiscordSRV discordSRV = (DiscordSRV) plugin;
+        discordSRV.getMainGuild().getTextChannelById(discordChannelId)
+        .sendMessageEmbeds(embed.build()).queue();
+    }
+}
     // アイテムの危険度に応じた色を返すメソッド
-    private Color getEmbedColor(int dangerLevel) {
-        switch (dangerLevel) {
-        case 5:
+private Color getEmbedColor(int dangerLevel) {
+    switch (dangerLevel) {
+    case 5:
                 return Color.MAGENTA; // 最高危険度
             case 4:
                 return Color.RED; // 高危険度

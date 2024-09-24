@@ -71,7 +71,7 @@ public class SDAPlugin extends JavaPlugin {
         // プレイヤーに通知
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (player.hasPermission("sda.use")) {
-                    player.sendMessage("§c[警告] config.ymlでDiscordチャンネルIDが設定されていません！");
+                    player.sendMessage("§c[SDA] config.ymlでDiscordチャンネルIDが設定されていません！");
                 }
             }
         }
@@ -106,6 +106,11 @@ public class SDAPlugin extends JavaPlugin {
                     reloadConfig();
                     loadConfigValues();
                     sender.sendMessage("SDA Plugin configuration reloaded.");
+                    // "discord-channel-id" が "YOUR-DISCORD-CHANNEL-ID" のままの場合に警告
+                    if (getDiscordChannelId().equals("YOUR-DISCORD-CHANNEL-ID")) {
+                    sender.sendMessage("§c[SDA] 警告: config.ymlでDiscordチャンネルIDが設定されていません！");// 送信者に警告
+                    getLogger().warning("DiscordチャンネルIDが設定されていません！"); // コンソールに警告
+                }
                     return true;
                 }
             }
