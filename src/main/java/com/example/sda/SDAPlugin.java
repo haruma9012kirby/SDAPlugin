@@ -38,7 +38,7 @@ public class SDAPlugin extends JavaPlugin {
         pluginEnabled = config.getBoolean("plugin-enabled", true);
         detectItems = config.getStringList("detectable-items");
         detectBedUse = config.getBoolean("detect-bed-use", true);
-        discordChannelId = getConfig().getString("discord-channel-id", "YOUR-DISCORD-CHANNEL-ID"); // デフォルトのチャンネルID
+        discordChannelId = config.getString("discord-channel-id", "YOUR-DISCORD-CHANNEL-ID"); // デフォルトのチャンネルID
         blockignite = config.getBoolean("detect-ignite-block", true);
     }
 
@@ -55,8 +55,7 @@ public class SDAPlugin extends JavaPlugin {
     }
 
     public String getDiscordChannelId() {
-    // null チェックがされていることを確認する
-        return discordChannelId != null ? discordChannelId : "YOUR-DISCORD-CHANNEL-ID";
+    return discordChannelId;
     }
 
     // discord-channel-id のチェックを追加するメソッド
@@ -80,38 +79,34 @@ public class SDAPlugin extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (label.equalsIgnoreCase("sda")) {
-            if (!sender.hasPermission("sda.use")) { // パーミッションのチェック
-                sender.sendMessage("§cあなたはこのコマンドを実行する権限を持っていません。");
-                return true;
-            }
-
-            if (args.length == 1) {
-                if (args[0].equalsIgnoreCase("on")) {
+        if (label.equalsIgnoreCase("sda") && sender.hasPermission("sda.use")) {
+        if (args.length == 1) {
+            switch (args[0].toLowerCase()) {
+                case "on":
                     pluginEnabled = true;
                     getConfig().set("plugin-enabled", true);
                     saveConfig();
                     sender.sendMessage("§a[SDA]SDAPluginが有効化されました");
                     return true;
-                } else if (args[0].equalsIgnoreCase("off")) {
+                case "off":
                     pluginEnabled = false;
                     getConfig().set("plugin-enabled", false);
                     saveConfig();
                     sender.sendMessage("§c[SDA]SDAPluginが無効化されました");
                     return true;
-                } else if (args[0].equalsIgnoreCase("reload")) {
+                case "reload":
                     reloadConfig();
                     loadConfigValues();
                     sender.sendMessage("§a[SDA]configファイルがリロードされました!");
-                    // "discord-channel-id" が "YOUR-DISCORD-CHANNEL-ID" のままの場合に警告
                     if (getDiscordChannelId().equals("YOUR-DISCORD-CHANNEL-ID")) {
-                    sender.sendMessage("§c[SDA] 警告: config.ymlでDiscordチャンネルIDが設定されていません！");// 送信者に警告
-                    getLogger().warning("DiscordチャンネルIDが設定されていません！"); // コンソールに警告
+                        sender.sendMessage("§c[SDA] 警告: config.ymlでDiscordチャンネルIDが設定されていません！");
+                        getLogger().warning("DiscordチャンネルIDが設定されていません！");
+                    }
+                    return true;
                 }
-                return true;
             }
         }
-    }
+    sender.sendMessage("§c無効なコマンドです。");
     return false;
-}
+    }
 }
