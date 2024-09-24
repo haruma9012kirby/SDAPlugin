@@ -21,6 +21,7 @@ public class SDAPlugin extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig(); // config.ymlを作成
         loadConfigValues();
+        checkDiscordChannelId(); // チャンネルIDのチェック
         getLogger().info("SDA Plugin Enabled");
         Bukkit.getPluginManager().registerEvents(new GriefingItemListener(this), this);
 
@@ -37,7 +38,7 @@ public class SDAPlugin extends JavaPlugin {
         pluginEnabled = config.getBoolean("plugin-enabled", true);
         detectItems = config.getStringList("detectable-items");
         detectBedUse = config.getBoolean("detect-bed-use", true);
-        discordChannelId = getConfig().getString("discord-channel-id", "123456789012345678"); // デフォルトのチャンネルID
+        discordChannelId = getConfig().getString("discord-channel-id", "YOUR-DISCORD-CHANNEL-ID"); // デフォルトのチャンネルID
         blockignite = config.getBoolean("detect-ignite-block", true);
     }
 
@@ -53,8 +54,27 @@ public class SDAPlugin extends JavaPlugin {
         return detectBedUse;
     }
 
+    // チャンネルIDを取得するメソッド
     public String getDiscordChannelId() {
-        return discordChannelId != null ? discordChannelId : "123456789012345678"; // nullチェックでデフォルト値を返す
+    // デフォルト値のままであれば null を返す
+        if ("YOUR-DISCORD-CHANNEL-ID".equals(discordChannelId)) {
+            return null;
+        }
+        return discordChannelId;
+    }
+    // discord-channel-id のチェックを追加するメソッド
+    public void checkDiscordChannelId() {
+        if ("YOUR-DISCORD-CHANNEL-ID".equals(discordChannelId)) {
+        // コンソールに警告メッセージを表示
+            getLogger().warning("config.ymlでDiscordチャンネルIDが設定されていません！");
+
+        // プレイヤーに通知
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player.hasPermission("sda.use")) {
+                    player.sendMessage("§c[警告] config.ymlでDiscordチャンネルIDが設定されていません！");
+                }
+            }
+        }
     }
 
     public boolean isblockignite() {
