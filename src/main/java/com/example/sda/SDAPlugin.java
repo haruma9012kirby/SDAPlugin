@@ -91,13 +91,13 @@ public class SDAPlugin extends JavaPlugin {
                     pluginEnabled = true;
                     getConfig().set("plugin-enabled", true);
                     saveConfig();
-                    sender.sendMessage("&a[SDA]SDAPluginが有効化されました");
+                    sender.sendMessage("§a[SDA]SDAPluginが有効化されました");
                     return true;
                 } else if (args[0].equalsIgnoreCase("off")) {
                     pluginEnabled = false;
                     getConfig().set("plugin-enabled", false);
                     saveConfig();
-                    sender.sendMessage("&a[SDA]SDAPluginが無効化されました");
+                    sender.sendMessage("§a[SDA]SDAPluginが無効化されました");
                     return true;
                 } else if (args[0].equalsIgnoreCase("reload")) {
                     reloadConfig();
