@@ -100,7 +100,7 @@ public class SDAPlugin extends JavaPlugin {
                     sender.sendMessage("§a[SDA]configファイルがリロードされました!");
                     if (getDiscordChannelId().equals("YOUR-DISCORD-CHANNEL-ID")) {
                         sender.sendMessage("§c[SDA] 警告: config.ymlでDiscordチャンネルIDが設定されていません！");
-                        getLogger().warning("DiscordチャンネルIDが設定されていません！");
+                        getLogger().warning("[SDA]DiscordチャンネルIDが設定されていません！");
                     }
                     return true;
                 }
