@@ -37,7 +37,7 @@ public class GriefingItemListener implements Listener {
         this.plugin = plugin;
         loadGriefingItems();
     }
-    // プラグインが有効かどうかをチェックする共通メソッド
+    // バイパス、プラグイン無効時の共通メソッド
     private boolean isPluginActive(Player player) {
         return plugin.isPluginEnabled() && !player.hasPermission("sda.bypass");
     }
@@ -63,12 +63,12 @@ public class GriefingItemListener implements Listener {
             }
         }
     }
-
+    //ベッド爆破の検知
     @EventHandler
     public void onPlayerBedEnter(PlayerBedEnterEvent event) {
     Player player = event.getPlayer();
-    //パーミッション・プラグインの有効or無効・ベッド爆破検知の有効or無効
-    if (player.hasPermission("sda.bypass") || !plugin.isPluginEnabled() || !plugin.isDetectBedUse()) {
+    //共通,ベッド検知
+    if (!isPluginActive(player) || !plugin.isDetectBedUse()) {
         return;
     }
         // ネザーやエンドでベッドを使用した場合
@@ -79,8 +79,8 @@ public class GriefingItemListener implements Listener {
             sendDiscordNotification(player, bedMaterial, "ベッド爆破", 3);
         }
     }
-}
-    // 色付きベッドかどうかを判定するメソッド
+}   
+    //ベッドの種類
     private boolean isBedMaterial(Material material) {
         return material == Material.WHITE_BED || 
         material == Material.ORANGE_BED || 
@@ -100,7 +100,7 @@ public class GriefingItemListener implements Listener {
         material == Material.BLACK_BED;
     }
 
-    // Config.ymlの"どのアイテムを検知するか"の中にあるアイテムをインベントリ内でクリックした場合に検知します！
+    // アイテム所持(クリック)検知
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player)) {
@@ -108,7 +108,7 @@ public class GriefingItemListener implements Listener {
         }
         Player player = (Player) event.getWhoClicked();
         //パーミッション・プラグインの有効or無効
-        if (player.hasPermission("sda.bypass") || !plugin.isPluginEnabled()) {
+        if (!isPluginActive(player)) {
             return;
         }
         ItemStack item = event.getCurrentItem();
@@ -121,17 +121,16 @@ public class GriefingItemListener implements Listener {
         }
     }
 
-    // Config.ymlの"どのアイテムを検知するか"の中にある設置可能なブロックを検知します！
-@EventHandler
-public void onBlockPlace(BlockPlaceEvent event) {
+    // アイテム設置検知(ただし直接設置でないと検知不可)
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
     Player player = event.getPlayer();
     Block block = event.getBlock();
     Material blockType = block.getType();
     //パーミッション・プラグインの有効or無効
-    if (player.hasPermission("sda.bypass") || !plugin.isPluginEnabled()) {
+    if (!isPluginActive(player)) {
         return;
     }
-
     // 対象のブロックが検知アイテムリストにあるかどうか確認
     Integer dangerLevel = itemDangerLevels.get(blockType); // 危険度を取得
     if (dangerLevel != null) {
@@ -139,13 +138,13 @@ public void onBlockPlace(BlockPlaceEvent event) {
     }
 }
 
-    // ブロックの着火を検知します！
-@EventHandler
-public void onPlayerUseFlintAndSteel(PlayerInteractEvent event) {
+    // ブロックの着火を検知
+    @EventHandler
+    public void onPlayerUseFlintAndSteel(PlayerInteractEvent event) {
     Player player = event.getPlayer();
     ItemStack item = event.getItem();
     //パーミッション・プラグインの有効or無効
-    if (player.hasPermission("sda.bypass") || !plugin.isPluginEnabled() || !plugin.isblockignite()) {
+    if (!isPluginActive(player) || !plugin.isblockignite()) {
         return;
     }
     if (item != null && item.getType() == Material.FLINT_AND_STEEL) {
@@ -159,9 +158,13 @@ public void onPlayerUseFlintAndSteel(PlayerInteractEvent event) {
         }
     }
 }
+    //
 
     //Discord検知用 埋め込み形式でDiscordのBOTから通知が来ます！
     public void sendDiscordNotification(Player player, Material item, String action, int dangerLevel) {
+    //チャンネルID取得
+    String discordChannelId = plugin.getDiscordChannelId();
+    //チャンネルIDが設定されていなかった時の処理
         if (discordChannelId == null) {
     Bukkit.getLogger().warning("Discord チャンネルIDが設定されていません！");
         return;
@@ -189,7 +192,7 @@ public void onPlayerUseFlintAndSteel(PlayerInteractEvent event) {
     // アイテムの危険度に応じた色を返すメソッド
     private Color getEmbedColor(int dangerLevel) {
     switch (dangerLevel) {
-    case 5:
+        case 5:
             return Color.MAGENTA; // 最高危険度
         case 4:
             return Color.RED; // 高危険度
