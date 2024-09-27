@@ -1,5 +1,5 @@
 name: SDA
-version: 1.11-Pre-Alpha
+version: 1.12-beta
 main: com.example.sda.SDAPlugin
 author: Soryu-haruma(Asl)
 description: 危険なアイテムの設置などを検知してDiscordに通知を送信

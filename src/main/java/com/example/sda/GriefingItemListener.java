@@ -160,7 +160,7 @@ public class GriefingItemListener implements Listener {
 }
     //
 
-    //Discord検知用 埋め込み形式でDiscordのBOTから通知が来ます！
+    //Discord検知用 埋め込み形式
     public void sendDiscordNotification(Player player, Material item, String action, int dangerLevel) {
     //チャンネルID取得
     String discordChannelId = plugin.getDiscordChannelId();
@@ -205,7 +205,7 @@ public class GriefingItemListener implements Listener {
         }
     }
 
-    // プレイヤーの居るディメンションを特定してsendDiscordNotificationのディメンションに反映させるやつです！
+    // ディメンション特定
     private String getDimension(org.bukkit.World.Environment environment) {
         switch (environment) {
         case NORMAL:
