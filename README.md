@@ -18,7 +18,8 @@ SDAPluginのConfigファイルの再読み込み
 `detectable-items:`    検出するアイテムと危険度(レベル2～5まで)
 `detect-bed-use: true/false`    ベッド爆破を検知の有効化/無効化  
 `discord-channel-id: 'YOUR-DISCORD-CHANNEL-ID'   ` DiscordのチャンネルIDを`'YOUR-DISCORD-CHANNEL-ID'`に入力。  
-`detect-ignite-block: true/false`    ブロック着火検知を有効化/無効化 
+`detect-ignite-block: true/false`    ブロック着火検知を有効化/無効化  
+`detect-lavabucket-use: true/false`    溶岩バケツ使用検知を有効化/無効化  
   
 **注意!**  
 こちらのプラグインはBukkit/Spigot/papermcの環境のみ動作します！  
