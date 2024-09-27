@@ -64,37 +64,34 @@ public class SDAPlugin extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (label.equalsIgnoreCase("sda")) {
-            if (!sender.hasPermission("sda.use")) { // パーミッションのチェック
-                sender.sendMessage("§cYou don't have permission to use this command.");
-                return true;
-            }
-
-            if (args.length == 1) {
-                if (args[0].equalsIgnoreCase("on")) {
+        if (label.equalsIgnoreCase("sda") && sender.hasPermission("sda.use")) {
+        if (args.length == 1) {
+            switch (args[0].toLowerCase()) {
+                case "on":
                     pluginEnabled = true;
                     getConfig().set("plugin-enabled", true);
                     saveConfig();
-                    sender.sendMessage("SDA Plugin is now enabled.");
+                    sender.sendMessage("§a[SDA]SDAPluginが有効化されました");
                     return true;
-                } else if (args[0].equalsIgnoreCase("off")) {
+                case "off":
                     pluginEnabled = false;
                     getConfig().set("plugin-enabled", false);
                     saveConfig();
-                    sender.sendMessage("SDA Plugin is now disabled.");
+                    sender.sendMessage("§c[SDA]SDAPluginが無効化されました");
                     return true;
-                } else if (args[0].equalsIgnoreCase("reload")) {
-                    if (griefingItemListener == null) {
-                        griefingItemListener = new GriefingItemListener(this); // 初期化
-                    }
+                case "reload":
                     reloadConfig();
                     loadConfigValues();
-                    griefingItemListener.loadGriefingItems(); 
-                    sender.sendMessage("SDA Plugin configuration reloaded.");
+                    sender.sendMessage("§a[SDA]configファイルがリロードされました!");
+                    if (getDiscordChannelId().equals("YOUR-DISCORD-CHANNEL-ID")) {
+                        sender.sendMessage("§c[SDA] 警告: config.ymlでDiscordチャンネルIDが設定されていません！");
+                        getLogger().warning("[SDA]DiscordチャンネルIDが設定されていません！");
+                    }
                     return true;
                 }
             }
         }
-        return false;
+    sender.sendMessage("§c無効なコマンドです。");
+    return false;
     }
 }
