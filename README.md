@@ -15,9 +15,10 @@ SDAPluginのConfigファイルの再読み込み
   
 ### [Config.ymlファイルの見方](src/main/resources/config.yml)  
 `plugin-enabled: true/false`    SDAPluginの有効化/無効化  
-`detectable-items:`    検出するアイテム(現在はβ版のためエンドクリスタルなどのアイテムが検知できません。)  
+`detectable-items:`    検出するアイテムと危険度(レベル2～5まで)
 `detect-bed-use: true/false`    ベッド爆破を検知の有効化/無効化  
 `discord-channel-id: 'YOUR-DISCORD-CHANNEL-ID'   ` DiscordのチャンネルIDを`'YOUR-DISCORD-CHANNEL-ID'`に入力。  
+`detect-ignite-block: true/false`    ブロック着火検知を有効化/無効化 
   
 **注意!**  
 こちらのプラグインはBukkit/Spigot/papermcの環境のみ動作します！  
