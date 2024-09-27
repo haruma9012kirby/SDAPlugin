@@ -1,11 +1,17 @@
 name: SDA
 version: 1.11-Pre-Alpha
 main: com.example.sda.SDAPlugin
+author: Soryu-haruma(Asl)
+description: 危険なアイテムの設置などを検知してDiscordに通知を送信
 api-version: 1.21
 commands:
   sda:
     description: SDAプラグインを操作するコマンド
-    usage: /<command> <on|off|reload>
+    usage: |
+     Usage: /sda <command>
+      - on : Enable the plugin
+      - off : Disable the plugin
+      - reload : Reload the configuration file
     permission: sda.use
 permissions:
   sda.use:

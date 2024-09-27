@@ -1,6 +1,9 @@
 # プラグインの有効化/無効化
 plugin-enabled: true
 # どのアイテムを検知するかとその危険度
+# "ブロック設置"に関しては設置型ブロックのみ検知可能。
+# (溶岩などは直接設置しているわけではないので"設置"検知は不可)
+# detectable-itemsの変更時のみ再起動が必要
 detectable-items:
   - item: WITHER_SKELETON_SKULL
     danger-level: 3
