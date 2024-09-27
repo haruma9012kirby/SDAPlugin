@@ -84,6 +84,9 @@ public class SDAPlugin extends JavaPlugin {
                     sender.sendMessage("SDA Plugin is now disabled.");
                     return true;
                 } else if (args[0].equalsIgnoreCase("reload")) {
+                    if (griefingItemListener == null) {
+                        griefingItemListener = new GriefingItemListener(this); // 初期化
+                    }
                     reloadConfig();
                     loadConfigValues();
                     griefingItemListener.loadGriefingItems(); 
