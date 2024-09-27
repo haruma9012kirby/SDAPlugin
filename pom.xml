@@ -5,7 +5,7 @@
 
    <groupId>com.example.sda</groupId>
    <artifactId>SDA</artifactId>
-   <version>1.12-beta</version>
+   <version>1.13-beta</version>
 
    <name>SDA</name>
    <description>A plugin to detect griefing items and notify Discord</description>

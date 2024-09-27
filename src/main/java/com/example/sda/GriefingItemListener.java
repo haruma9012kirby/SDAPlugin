@@ -158,7 +158,25 @@ public class GriefingItemListener implements Listener {
         }
     }
 }
-    //
+    // 溶岩バケツの使用を検知
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        Block block = event.getClickedBlock();
+    //共通,溶岩バケツ使用検知
+    if (!isPluginActive(player) || !plugin.islavabucketuse()) {
+            return;
+        }
+        if (event.getItem() != null && event.getItem().getType() == Material.LAVA_BUCKET) {
+
+        if (block != null) {
+            Material blockType = block.getType();
+            // 対象のブロックが検知アイテムリストにあるかどうか確認
+            Integer dangerLevel = itemDangerLevels.getOrDefault(blockType, 3); // デフォルトを3に設定
+            sendDiscordNotification(player, blockType, "溶岩バケツ使用", dangerLevel);
+        }
+    }
+}
 
     //Discord検知用 埋め込み形式
     public void sendDiscordNotification(Player player, Material item, String action, int dangerLevel) {
@@ -195,9 +213,9 @@ public class GriefingItemListener implements Listener {
         case 5:
             return Color.MAGENTA; // 最高危険度
         case 4:
-            return Color.RED; // 高危険度
+            return Color.decode("#800000"); // 高危険度
         case 3:
-            return Color.ORANGE; // 中危険度
+            return Color.RED; // 中危険度
         case 2:
             return Color.YELLOW; // 低危険度
         default:

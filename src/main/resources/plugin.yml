@@ -1,5 +1,5 @@
 name: SDA
-version: 1.12-beta
+version: 1.13-beta
 main: com.example.sda.SDAPlugin
 author: Soryu-haruma(Asl)
 description: 危険なアイテムの設置などを検知してDiscordに通知を送信
@@ -9,9 +9,10 @@ commands:
     description: SDAプラグインを操作するコマンド
     usage: |
      Usage: /sda <command>
-      - on : Enable the plugin
-      - off : Disable the plugin
-      - reload : Reload the configuration file
+      - on : プラグインを有効化
+      - off : プラグインを無効化
+      - reload : configファイルを再読み込み
+      - test : テストメッセージをDiscordに送信
     permission: sda.use
 permissions:
   sda.use:

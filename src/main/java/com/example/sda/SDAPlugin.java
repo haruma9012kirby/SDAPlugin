@@ -1,5 +1,6 @@
 package com.example.sda;
 
+import github.scarsz.discordsrv.DiscordSRV;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -17,7 +18,7 @@ public class SDAPlugin extends JavaPlugin {
     private String discordChannelId;
     private boolean blockignite;
     public GriefingItemListener griefingItemListener;
-
+    private boolean lavaBucketUse;
     @Override
     public void onEnable() {
         saveDefaultConfig(); // config.ymlを作成
@@ -40,6 +41,7 @@ public class SDAPlugin extends JavaPlugin {
         detectBedUse = config.getBoolean("detect-bed-use", true);
         discordChannelId = getConfig().getString("discord-channel-id", "123456789012345678"); // デフォルトのチャンネルID
         blockignite = config.getBoolean("detect-ignite-block", true);
+        lavaBucketUse = config.getBoolean("detect-lavabucket-use", true);
     }
 
     public boolean isPluginEnabled() {
@@ -60,6 +62,10 @@ public class SDAPlugin extends JavaPlugin {
 
     public boolean isblockignite() {
         return blockignite;
+    }
+
+    public boolean islavabucketuse() {
+        return lavaBucketUse;
     }
 
     @Override
@@ -88,10 +94,43 @@ public class SDAPlugin extends JavaPlugin {
                         getLogger().warning("[SDA]DiscordチャンネルIDが設定されていません！");
                     }
                     return true;
+                case "test":
+                    // テストメッセージを Discord に送信
+                    if (sender instanceof Player) {
+                        Player player = (Player) sender;
+
+                        // Discord へのメッセージ送信
+                        sendSimpleDiscordMessage("テストメッセージ", player.getName() + " がテストメッセージを送信しました！");
+
+                        sender.sendMessage("§e[SDA] テストメッセージを Discord に送信しました！");
+                    } else {
+                        sender.sendMessage("§cこのコマンドはプレイヤーのみが実行できます。");
+                    }
+                    return true;
                 }
             }
         }
     sender.sendMessage("§c無効なコマンドです。");
     return false;
+    }
+    // テストメッセージ送信用
+    public void sendSimpleDiscordMessage(String title, String message) {
+        // Discord チャンネル ID の取得
+        String discordChannelId = getConfig().getString("discord-channel-id");
+        if (discordChannelId == null || discordChannelId.equals("YOUR-DISCORD-CHANNEL-ID")) {
+            getLogger().warning("Discord チャンネル ID が設定されていません！");
+            return;
+        }
+
+        // DiscordSRV インスタンスの取得
+        DiscordSRV discordSRV = (DiscordSRV) Bukkit.getPluginManager().getPlugin("DiscordSRV");
+        if (discordSRV != null) {
+            // Discord チャンネルへメッセージを送信
+            discordSRV.getMainGuild().getTextChannelById(discordChannelId)
+                    .sendMessage("**" + title + "**\n" + message)
+                    .queue();
+        } else {
+            getLogger().warning("DiscordSRV プラグインが見つかりません！");
+        }
     }
 }
