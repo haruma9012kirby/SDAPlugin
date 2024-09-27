@@ -21,9 +21,10 @@ public class SDAPlugin extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig(); // config.ymlを作成
         loadConfigValues();
+        checkDiscordChannelId(); // チャンネルIDのチェック
         getLogger().info("SDA Plugin Enabled");
         Bukkit.getPluginManager().registerEvents(new GriefingItemListener(this), this);
-
+        getLogger().info("Config loaded: pluginEnabled=" + pluginEnabled + ", detectBedUse=" + detectBedUse + ", discordChannelId=" + discordChannelId + ", detectblockignite=" + blockignite);
     }
 
     @Override
@@ -37,7 +38,7 @@ public class SDAPlugin extends JavaPlugin {
         pluginEnabled = config.getBoolean("plugin-enabled", true);
         detectItems = config.getStringList("detectable-items");
         detectBedUse = config.getBoolean("detect-bed-use", true);
-        discordChannelId = getConfig().getString("discord-channel-id", "123456789012345678"); // デフォルトのチャンネルID
+        discordChannelId = config.getString("discord-channel-id", "YOUR-DISCORD-CHANNEL-ID"); // デフォルトのチャンネルID
         blockignite = config.getBoolean("detect-ignite-block", true);
     }
 
@@ -54,7 +55,22 @@ public class SDAPlugin extends JavaPlugin {
     }
 
     public String getDiscordChannelId() {
-        return discordChannelId != null ? discordChannelId : "123456789012345678"; // nullチェックでデフォルト値を返す
+    return discordChannelId;
+    }
+
+    // discord-channel-id のチェックを追加するメソッド
+    public void checkDiscordChannelId() {
+        if ("YOUR-DISCORD-CHANNEL-ID".equals(discordChannelId)) {
+        // コンソールに警告メッセージを表示
+            getLogger().warning("config.ymlでDiscordチャンネルIDが設定されていません！");
+
+        // プレイヤーに通知
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player.hasPermission("sda.use")) {
+                    player.sendMessage("§c[SDA] config.ymlでDiscordチャンネルIDが設定されていません！");
+                }
+            }
+        }
     }
 
     public boolean isblockignite() {
@@ -63,33 +79,34 @@ public class SDAPlugin extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (label.equalsIgnoreCase("sda")) {
-            if (!sender.hasPermission("sda.use")) { // パーミッションのチェック
-                sender.sendMessage("§cYou don't have permission to use this command.");
-                return true;
-            }
-
-            if (args.length == 1) {
-                if (args[0].equalsIgnoreCase("on")) {
+        if (label.equalsIgnoreCase("sda") && sender.hasPermission("sda.use")) {
+        if (args.length == 1) {
+            switch (args[0].toLowerCase()) {
+                case "on":
                     pluginEnabled = true;
                     getConfig().set("plugin-enabled", true);
                     saveConfig();
-                    sender.sendMessage("SDA Plugin is now enabled.");
+                    sender.sendMessage("§a[SDA]SDAPluginが有効化されました");
                     return true;
-                } else if (args[0].equalsIgnoreCase("off")) {
+                case "off":
                     pluginEnabled = false;
                     getConfig().set("plugin-enabled", false);
                     saveConfig();
-                    sender.sendMessage("SDA Plugin is now disabled.");
+                    sender.sendMessage("§c[SDA]SDAPluginが無効化されました");
                     return true;
-                } else if (args[0].equalsIgnoreCase("reload")) {
+                case "reload":
                     reloadConfig();
                     loadConfigValues();
-                    sender.sendMessage("SDA Plugin configuration reloaded.");
+                    sender.sendMessage("§a[SDA]configファイルがリロードされました!");
+                    if (getDiscordChannelId().equals("YOUR-DISCORD-CHANNEL-ID")) {
+                        sender.sendMessage("§c[SDA] 警告: config.ymlでDiscordチャンネルIDが設定されていません！");
+                        getLogger().warning("[SDA]DiscordチャンネルIDが設定されていません！");
+                    }
                     return true;
                 }
             }
         }
-        return false;
+    sender.sendMessage("§c無効なコマンドです。");
+    return false;
     }
 }
