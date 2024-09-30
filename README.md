@@ -3,6 +3,10 @@
 このプラグインは、[**DiscordSRV**](https://github.com/DiscordSRV/DiscordSRV)のAPIを使用した非公式のプラグインです。  
 基本的にDiscordSRVの設定を済ませ、confit.ymlにチャンネル名を設定すれば動作します。  
 
+# 欠陥  
+バージョンアップをするとconfigファイルが更新されません。方法もわからないので詳しい方居ましたら教えて下さい。((
+最初から一番新しいバージョンを導入することを推奨します。
+
 ### [各コマンド](src/main/resources/config.yml)  
 `/sda on/off`  
 SDAPluginの有効化/無効化  
