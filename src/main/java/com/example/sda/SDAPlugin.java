@@ -24,6 +24,7 @@ public class SDAPlugin extends JavaPlugin implements TabCompleter {
     public GriefingItemListener griefingItemListener;
     private boolean lavaBucketUse;
     private int notificationCooldown;
+    private List<String> notifyCommands; // 新しい設定項目
 
     @Override
     public void onEnable() {
@@ -47,10 +48,11 @@ public class SDAPlugin extends JavaPlugin implements TabCompleter {
         pluginEnabled = config.getBoolean("plugin-enabled", true);
         detectItems = config.getStringList("detectable-items");
         detectBedUse = config.getBoolean("detect-bed-use", true);
-        discordChannelId = getConfig().getString("discord-channel-id", "123456789012345678"); // デフォルトのチャンネルID
+        discordChannelId = getConfig().getString("discord-channel-id", "YOUR-DISCORD-CHANNEL-ID"); // デフォルトのチャンネルID
         blockignite = config.getBoolean("detect-ignite-block", true);
         lavaBucketUse = config.getBoolean("detect-lavabucket-use", true);
-        notificationCooldown = config.getInt("notification-cooldown", 30);
+        notificationCooldown = config.getInt("notification-cooldown", 1);
+        notifyCommands = config.getStringList("notify-commands"); // 新しい設定項目の読み込み
     }
 
     public boolean isPluginEnabled() {
@@ -66,7 +68,7 @@ public class SDAPlugin extends JavaPlugin implements TabCompleter {
     }
 
     public String getDiscordChannelId() {
-        return discordChannelId != null ? discordChannelId : "123456789012345678"; // nullチェックでデフォルト値を返す
+        return discordChannelId != null ? discordChannelId : "YOUR-DISCORD-CHANNEL-ID"; // nullチェックでデフォルト値を返す
     }
 
     public boolean isblockignite() {
@@ -79,6 +81,10 @@ public class SDAPlugin extends JavaPlugin implements TabCompleter {
 
     public int getNotificationCooldown() {
         return notificationCooldown;
+    }
+
+    public List<String> getNotifyCommands() {
+        return notifyCommands;
     }
 
     @Override
