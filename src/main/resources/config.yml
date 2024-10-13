@@ -25,3 +25,5 @@ discord-channel-id: 'YOUR-DISCORD-CHANNEL-ID'
 detect-ignite-block: true
 # 溶岩バケツの使用を検知
 detect-lavabucket-use: true
+# 通知のクールタイム（秒単位）
+notification-cooldown: 1

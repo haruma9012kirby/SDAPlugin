@@ -24,7 +24,7 @@ SDAPluginのConfigファイルの再読み込み
 `discord-channel-id: 'YOUR-DISCORD-CHANNEL-ID'   ` DiscordのチャンネルIDを`'YOUR-DISCORD-CHANNEL-ID'`に入力。  
 `detect-ignite-block: true/false`    ブロック着火検知を有効化/無効化  
 `detect-lavabucket-use: true/false`    溶岩バケツ使用検知を有効化/無効化  
-  
+`notification-cooldown: [seconds]`    通知のクールタイム（秒単位）  
 **注意!**  
 こちらのプラグインはBukkit/Spigot/papermcの環境のみ動作します！  
 また、動作確認自体はpapermcのみで確認しております。  

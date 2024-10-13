@@ -32,6 +32,8 @@ public class GriefingItemListener implements Listener {
     private final List<Material> griefingMaterials = new ArrayList<>();
     private String discordChannelId = null; // 初期化、もしくはデフォルト値を設定
     private final Map<Material, Integer> itemDangerLevels = new HashMap<>();
+    private int notificationCooldown;
+    private final Map<String, Long> lastNotificationTime = new HashMap<>();
 
     public GriefingItemListener(SDAPlugin plugin) {
         this.plugin = plugin;
@@ -180,32 +182,44 @@ public class GriefingItemListener implements Listener {
 
     //Discord検知用 埋め込み形式
     public void sendDiscordNotification(Player player, Material item, String action, int dangerLevel) {
-    //チャンネルID取得
-    String discordChannelId = plugin.getDiscordChannelId();
-    //チャンネルIDが設定されていなかった時の処理
+        String discordChannelId = plugin.getDiscordChannelId();
         if (discordChannelId == null) {
-    Bukkit.getLogger().warning("Discord チャンネルIDが設定されていません！");
-        return;
-    }
-    EmbedBuilder embed = new EmbedBuilder();
-    embed.setTitle("SDA Plugin: " + action)
-    .setDescription("プレイヤーが危険な行為を行いました。")
-    .setColor(getEmbedColor(dangerLevel))
-    .addField("プレイヤー名", player.getName(), false)
-    .addField("UUID", player.getUniqueId().toString(), false)
-    .addField("座標", "X: " + player.getLocation().getBlockX() + " Y: " + player.getLocation().getBlockY() + " Z: " + player.getLocation().getBlockZ(), false)
-    .addField("ディメンション", getDimension(player.getWorld().getEnvironment()), false)
-    .addField("アイテム", item.name(), false)
-    .setFooter("SDA Plugin", null);
+            Bukkit.getLogger().warning("Discord チャンネルIDが設定されていません！");
+            return;
+        }
 
-    DiscordSRV discordSRV = (DiscordSRV) Bukkit.getPluginManager().getPlugin("DiscordSRV");
-    if (discordSRV != null) {
-    discordSRV.getMainGuild().getTextChannelById(discordChannelId)
-    .sendMessageEmbeds(embed.build()).queue();
-    } else {
-    Bukkit.getLogger().warning("DiscordSRVプラグインが見つかりません！");
+        String key = player.getUniqueId().toString() + ":" + item.name() + ":" + action;
+        long currentTime = System.currentTimeMillis();
+        long cooldownMillis = plugin.getNotificationCooldown() * 1000L;
+
+        if (lastNotificationTime.containsKey(key) && 
+            currentTime - lastNotificationTime.get(key) < cooldownMillis) {
+            // クールダウン中なので通知をスキップ
+            return;
+        }
+
+        // 最後の通知時間を更新
+        lastNotificationTime.put(key, currentTime);
+
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("SDA Plugin: " + action)
+        .setDescription("プレイヤーが危険な行為を行いました。")
+        .setColor(getEmbedColor(dangerLevel))
+        .addField("プレイヤー名", player.getName(), false)
+        .addField("UUID", player.getUniqueId().toString(), false)
+        .addField("座標", "X: " + player.getLocation().getBlockX() + " Y: " + player.getLocation().getBlockY() + " Z: " + player.getLocation().getBlockZ(), false)
+        .addField("ディメンション", getDimension(player.getWorld().getEnvironment()), false)
+        .addField("アイテム", item.name(), false)
+        .setFooter("SDA Plugin", null);
+
+        DiscordSRV discordSRV = (DiscordSRV) Bukkit.getPluginManager().getPlugin("DiscordSRV");
+        if (discordSRV != null) {
+        discordSRV.getMainGuild().getTextChannelById(discordChannelId)
+        .sendMessageEmbeds(embed.build()).queue();
+        } else {
+        Bukkit.getLogger().warning("DiscordSRVプラグインが見つかりません！");
+        }
     }
-}
 
     // アイテムの危険度に応じた色を返すメソッド
     private Color getEmbedColor(int dangerLevel) {
