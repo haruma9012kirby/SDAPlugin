@@ -3,10 +3,10 @@
 # 注意:こちらはデバッグ版です。
 
 このプラグインは、[**DiscordSRV**](https://github.com/DiscordSRV/DiscordSRV)のAPIを使用した非公式のプラグインです。  
-基本的にDiscordSRVの設定を済ませ、confit.ymlにチャンネル名を設定すれば動作します。  
+基本的にDiscordSRVの設定を済ませ、confit.ymlにチャンネル名を設定すれば動作します。 
 
-# 欠陥  
-バージョンアップをするとconfigファイルが更新されません。方法もわからないので詳しい方居ましたら教えて下さい。((  
+## 注意
+バージョンアップをするとconfigファイルが更新されません。
 最初から一番新しいバージョンを導入することを推奨します。
 
 ### [各コマンド](src/main/resources/config.yml)  
@@ -56,7 +56,11 @@ SDAPluginのConfigファイルの再読み込み
 PAPER API 1.21.1-R0.1-SNAPSHOT  
 DiscordSRV API 1.26.0  
   
+当プラグインは、[MITライセンス](LICENSE)の下で公開されています。  
+  
 # 宣伝  
 ## 当プラグインの作成者が運営しているサーバーがあるので是非入ってください！  
 ## [【舞雑サーバー公式Discord】](https://discord.gg/DVEUK4gYaz)  
 ![survivalspawnpicture](https://i.gyazo.com/d2216fa5eaf169512ad4cb2f43ad841a.png)  
+
+`Author: Soryu-haruma(Asl,haruma9012kirby)`
