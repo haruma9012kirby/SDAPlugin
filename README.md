@@ -14,6 +14,8 @@
 SDAPluginの有効化/無効化  
 `/sda reload`  
 SDAPluginのConfigファイルの再読み込み  
+`/sda test`  
+テストメッセージをDiscordに送信  
   
 ### [パーミッション](src/main/resources/plugin.yml)  
 `sda.use` -上記コマンドを使用するためのパーミッション  
