@@ -32,7 +32,18 @@ SDAPluginのConfigファイルの再読み込み
 `enable-notify-commands: true/false`    コマンド通知を有効化/無効化  
 `notify-commands:`    通知を送信するコマンドのリスト  
 `debug-mode: true/false`    デバッグモードの有効化/無効化  
+
+### [language.ymlでの言語の変更](src/main/resources/language.yml)  
+`language: ` で言語の変更が可能です。  
+デフォルトの設定:  
+`language: ja`  
+日本語  
+`language: en`  
+英語  
 **注意!**  
+言語を変更した場合、config.ymlの値がリセットされます。  
+
+## 注意! 
 こちらのプラグインはBukkit/Spigot/papermcの環境のみ動作します！  
 また、動作確認自体はpapermcのみで確認しております。  
   
@@ -40,6 +51,10 @@ SDAPluginのConfigファイルの再読み込み
 様々なものを追加する予定です。  
   
 こちらのプラグインは完全にβ版なので、configファイルに追加した検知したいアイテムは動作しない場合があります。ご了承ください。  
+
+## API
+PAPER API 1.21.1-R0.1-SNAPSHOT  
+DiscordSRV API 1.26.0  
   
 # 宣伝  
 ## 当プラグインの作成者が運営しているサーバーがあるので是非入ってください！  
