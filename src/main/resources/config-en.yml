@@ -1,0 +1,65 @@
+#  ┌──────────────────────────────────────────────────────────────────────┐
+#  │            ____  ____    _    ____  _             _                  │
+#  │           / ___||  _ \  / \  |  _ \| |_   _  __ _(_)_ __             │
+#  │           \___ \| | | |/ _ \ | |_) | | | | |/ _` | | '_ \            │
+#  │            ___) | |_| / ___ \|  __/| | |_| | (_| | | | | |           │
+#  │           |____/|____/_/   \_\_|   |_|\__,_|\__, |_|_| |_|           │
+#  │                                             |___/                    │
+#  │                                                                      │
+#  │                          v1.15-beta                                  │
+#  │                                                                      │
+#  │                    Created by Soryu-haruma(Asl)                      │
+#  │      Repository: https://github.com/haruma9012kirby/SDAPlugin        │
+#  │         Discord: https://discord.gg/DVEUK4gYaz                       │
+#  └──────────────────────────────────────────────────────────────────────┘
+# Enable/disable the plugin
+plugin-enabled: true
+# Which items to detect and their danger levels
+# Only block-type items can be detected for "block placement".
+# (Lava, etc., cannot be detected as "placement" because they are not directly placed)
+# Danger levels are set as integers from 1 to 5
+# 1: White 2: Yellow 3: Red 4: Dark Red 5: Purple
+# Restart is required only when changing detectable-items
+detectable-items:
+  - item: WITHER_SKELETON_SKULL
+    danger-level: 3
+  - item: LAVA_BUCKET
+    danger-level: 4
+  - item: FLINT_AND_STEEL
+    danger-level: 2
+  - item: TNT
+    danger-level: 5
+  - item: END_CRYSTAL
+    danger-level: 4
+  - item: COMMAND_BLOCK
+    danger-level: 5
+# Enable detection of bed use
+detect-bed-use: true 
+# Enter the Discord channel ID here
+discord-channel-id: 'YOUR-DISCORD-CHANNEL-ID' 
+# Detect block ignition
+detect-ignite-block: true
+# Detect lava bucket use
+detect-lavabucket-use: true
+# Notification cooldown (in seconds), default is 1 second
+notification-cooldown: 1
+
+# There is no way to test it, so I don't know if it detects or not.
+# Enable command notifications
+enable-notify-commands: true
+# List of commands to send notifications for
+# Example:
+# notify-commands:
+#  - op
+#  - deop
+#  - ban
+notify-commands:
+  - op
+  - deop
+  - ban
+# Debug mode
+debug-mode: false
+
+# ここは変更しないでください。
+language-identifier: en
+# Author: Soryu-haruma(Asl,haruma9012kirby)

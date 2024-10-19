@@ -1,11 +1,16 @@
 name: SDA
-version: 1.11-Pre-Alpha
+version: 1.15-beta
 main: com.example.sda.SDAPlugin
+author: Soryu-haruma(Asl,haruma9012kirby)
+url: https://github.com/haruma9012kirby/SDAPlugin
+description: >
+  危険なアイテムの設置などを検知してDiscordに通知を送信
+  (Detect dangerous item placement and send notifications to Discord)
 api-version: 1.21
+api: 1.21.1-R0.1-SNAPSHOT
 commands:
   sda:
     description: SDAプラグインを操作するコマンド
-    usage: /<command> <on|off|reload>
     permission: sda.use
 permissions:
   sda.use:
@@ -14,3 +19,5 @@ permissions:
   sda.bypass:
     description: 検知をバイパス
     default: op
+#
+# Author: Soryu-haruma(Asl,haruma9012kirby)

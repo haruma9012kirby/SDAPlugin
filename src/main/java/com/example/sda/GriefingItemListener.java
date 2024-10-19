@@ -1,11 +1,14 @@
 package com.example.sda;
 
-import github.scarsz.discordsrv.DiscordSRV;
-import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,209 +16,221 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.event.block.BlockIgniteEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import github.scarsz.discordsrv.DiscordSRV;
+import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder;
 
 public class GriefingItemListener implements Listener {
 
     private final SDAPlugin plugin;
     private final List<Material> griefingMaterials = new ArrayList<>();
-    private String discordChannelId = null; // 初期化、もしくはデフォルト値を設定
     private final Map<Material, Integer> itemDangerLevels = new HashMap<>();
-
+    private final Map<String, Long> lastNotificationTime = new HashMap<>();
     public GriefingItemListener(SDAPlugin plugin) {
         this.plugin = plugin;
         loadGriefingItems();
     }
-    // バイパス、プラグイン無効時の共通メソッド
+
+    // プラグインがアクティブかどうかを確認
     private boolean isPluginActive(Player player) {
         return plugin.isPluginEnabled() && !player.hasPermission("sda.bypass");
     }
 
+    // 検知アイテムの読み込み
     private void loadGriefingItems() {
         FileConfiguration config = plugin.getConfig();
-        List<Map<?, ?>> items = config.getMapList("detectable-items");
+        List<Map<?, ?>> items = new ArrayList<>(config.getMapList("detectable-items"));
 
-        for (Map<?, ?> itemData : items) {
-            String itemName = (String) itemData.get("item");
-            Integer dangerLevel = (Integer) itemData.get("danger-level");
-
-            try {
-                Material material = Material.valueOf(itemName.toUpperCase());
-                griefingMaterials.add(material);
-                if (dangerLevel == null) {
+        // メインスレッドでコレクション操作を行う
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            items.forEach(itemData -> {
+                String itemName = (String) itemData.get("item");
+                Integer dangerLevel = (Integer) itemData.get("danger-level");
+                try {
+                    Material material = Material.valueOf(itemName.toUpperCase());
+                    griefingMaterials.add(material);
+                    itemDangerLevels.put(material, dangerLevel != null ? dangerLevel : 1);
+                } catch (IllegalArgumentException e) {
+                    Bukkit.getLogger().warning(plugin.getMessage(String.format("invalid-item-name", itemName)));
                 }
-
-            // 危険度を保持するマップに追加
-                itemDangerLevels.put(material, dangerLevel);
-            } catch (IllegalArgumentException e) {
-                Bukkit.getLogger().warning(itemName + " は有効なアイテム名ではありません。");
-            }
-        }
+            });
+        });
     }
-    //ベッド爆破の検知
+
+    // ベッド爆破の検知
     @EventHandler
     public void onPlayerBedEnter(PlayerBedEnterEvent event) {
-    Player player = event.getPlayer();
-    //共通,ベッド検知
-    if (!isPluginActive(player) || !plugin.isDetectBedUse()) {
-        return;
-    }
-        // ネザーやエンドでベッドを使用した場合
-        if (event.getBed().getWorld().getEnvironment() == org.bukkit.World.Environment.NETHER ||
-            event.getBed().getWorld().getEnvironment() == org.bukkit.World.Environment.THE_END) {
-            Material bedMaterial = event.getBed().getType(); // ベッドの種類を取得
+        Player player = event.getPlayer();
+        if (!isPluginActive(player) || !plugin.isDetectBedUse()) return;
+        
+        World.Environment env = event.getBed().getWorld().getEnvironment();
+        if (env == World.Environment.NETHER || env == World.Environment.THE_END) {
+            Material bedMaterial = event.getBed().getType();
             if (isBedMaterial(bedMaterial)) {
-            sendDiscordNotification(player, bedMaterial, "ベッド爆破", 3);
+                sendDiscordNotification(player, bedMaterial, plugin.getMessage("bed-explosion"), 3);
+                plugin.logDebug(String.format(plugin.getMessage("bed-explosion-debug"), player.getName(), bedMaterial.name()));
+            }
         }
-    }
-}   
-    //ベッドの種類
+    }   
+
+    // ベッドの種類を確認
     private boolean isBedMaterial(Material material) {
-        return material == Material.WHITE_BED || 
-        material == Material.ORANGE_BED || 
-        material == Material.MAGENTA_BED || 
-        material == Material.LIGHT_BLUE_BED || 
-        material == Material.YELLOW_BED || 
-        material == Material.LIME_BED || 
-        material == Material.PINK_BED || 
-        material == Material.GRAY_BED || 
-        material == Material.LIGHT_GRAY_BED || 
-        material == Material.CYAN_BED || 
-        material == Material.PURPLE_BED || 
-        material == Material.BLUE_BED || 
-        material == Material.BROWN_BED || 
-        material == Material.GREEN_BED || 
-        material == Material.RED_BED || 
-        material == Material.BLACK_BED;
+        return material.name().endsWith("_BED");
     }
 
     // アイテム所持(クリック)検知
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
+        if (!(event.getWhoClicked() instanceof Player)) return;
         Player player = (Player) event.getWhoClicked();
-        //パーミッション・プラグインの有効or無効
-        if (!isPluginActive(player)) {
-            return;
-        }
+        if (!isPluginActive(player)) return;
+        
         ItemStack item = event.getCurrentItem();
         if (item != null) {
-            Material itemType = item.getType();
-            Integer dangerLevel = itemDangerLevels.get(itemType);// 危険度を取得
+            Integer dangerLevel = itemDangerLevels.get(item.getType());
             if (dangerLevel != null) {
-                sendDiscordNotification(player, itemType, "アイテム所持", dangerLevel);
+                sendDiscordNotification(player, item.getType(), plugin.getMessage("item-possession"), dangerLevel);
+                if (plugin.isDebugMode()) {
+                    plugin.logDebug(String.format(plugin.getMessage("item-possession-debug"), player.getName(), item.getType().name()));
+                }
             }
         }
     }
 
-    // アイテム設置検知(ただし直接設置でないと検知不可)
+    // アイテム設置検知
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-    Player player = event.getPlayer();
-    Block block = event.getBlock();
-    Material blockType = block.getType();
-    //パーミッション・プラグインの有効or無効
-    if (!isPluginActive(player)) {
-        return;
+        Player player = event.getPlayer();
+        if (!isPluginActive(player)) return;
+        
+        Material blockType = event.getBlock().getType();
+        Integer dangerLevel = itemDangerLevels.get(blockType);
+        if (dangerLevel != null) {
+            sendDiscordNotification(player, blockType, plugin.getMessage("block-placement"), dangerLevel);
+            if (plugin.isDebugMode()) {
+                plugin.logDebug(String.format(plugin.getMessage("block-placement-debug"), player.getName(), blockType.name()));
+            }
+        }
     }
-    // 対象のブロックが検知アイテムリストにあるかどうか確認
-    Integer dangerLevel = itemDangerLevels.get(blockType); // 危険度を取得
-    if (dangerLevel != null) {
-        sendDiscordNotification(player, blockType, "ブロック設置", dangerLevel);
-    }
-}
 
     // ブロックの着火を検知
     @EventHandler
     public void onPlayerUseFlintAndSteel(PlayerInteractEvent event) {
-    Player player = event.getPlayer();
-    ItemStack item = event.getItem();
-    //パーミッション・プラグインの有効or無効
-    if (!isPluginActive(player) || !plugin.isblockignite()) {
-        return;
-    }
-    if (item != null && item.getType() == Material.FLINT_AND_STEEL) {
-        Block block = event.getClickedBlock();
-
-        if (block != null) {
-            Material blockType = block.getType();
-            // 対象のブロックが検知アイテムリストにあるかどうか確認
-            Integer dangerLevel = itemDangerLevels.getOrDefault(blockType, 0); // デフォルトを0に設定
-            sendDiscordNotification(player, blockType, "ブロック着火", dangerLevel);
+        Player player = event.getPlayer();
+        if (!isPluginActive(player) || !plugin.isblockignite()) return;
+        
+        ItemStack item = event.getItem();
+        if (item != null && item.getType() == Material.FLINT_AND_STEEL) {
+            Block block = event.getClickedBlock();
+            if (block != null) {
+                Material blockType = block.getType();
+                Integer dangerLevel = itemDangerLevels.getOrDefault(blockType, 0);
+                sendDiscordNotification(player, blockType, plugin.getMessage("block-ignition"), dangerLevel);
+                if (plugin.isDebugMode()) {
+                    plugin.logDebug(String.format(plugin.getMessage("block-ignition-debug"), player.getName(), blockType.name()));
+                }
+            }
         }
     }
-}
-    //
 
-    //Discord検知用 埋め込み形式でDiscordのBOTから通知が来ます！
+    // 溶岩バケツの使用を検知
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        if (!isPluginActive(player) || !plugin.islavabucketuse()) return;
+        
+        ItemStack item = event.getItem();
+        if (item != null && item.getType() == Material.LAVA_BUCKET) {
+            Block block = event.getClickedBlock();
+            if (block != null) {
+                Material blockType = block.getType();
+                Integer dangerLevel = itemDangerLevels.getOrDefault(blockType, 3);
+                sendDiscordNotification(player, blockType, plugin.getMessage("lava-bucket-use"), dangerLevel);
+                if (plugin.isDebugMode()) {
+                    plugin.logDebug(String.format(plugin.getMessage("lava-bucket-use-debug"), player.getName(), blockType.name()));
+                }
+            }
+        }
+    }
+
+    // コマンド実行イベントの検知
+    @EventHandler
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+        if (!plugin.isEnableNotifyCommands()) return; // enable-notify-commandsが有効かどうかを確認
+
+        Player player = event.getPlayer();
+        String command = event.getMessage().split(" ")[0].substring(1); // コマンド名を取得
+
+        if (plugin.getNotifyCommands().contains(command) && 
+            !player.hasPermission("sda.use") && 
+            !player.hasPermission("sda.bypass")) { //sdaのデフォルトはopだから大丈夫だしより確実
+            sendDiscordNotification(player, null, plugin.getMessage("command-execution") + command, 5);
+            if (plugin.isDebugMode()) {
+            plugin.logDebug(String.format(plugin.getMessage("command-execution-debug"), player.getName(), command));
+            }
+        }
+    }
+
+    // Discord通知送信
     public void sendDiscordNotification(Player player, Material item, String action, int dangerLevel) {
-    //チャンネルID取得
-    String discordChannelId = plugin.getDiscordChannelId();
-    //チャンネルIDが設定されていなかった時の処理
+        String discordChannelId = plugin.getDiscordChannelId();
         if (discordChannelId == null) {
-    Bukkit.getLogger().warning("Discord チャンネルIDが設定されていません！");
-        return;
-    }
-    EmbedBuilder embed = new EmbedBuilder();
-    embed.setTitle("SDA Plugin: " + action)
-    .setDescription("プレイヤーが危険な行為を行いました。")
-    .setColor(getEmbedColor(dangerLevel))
-    .addField("プレイヤー名", player.getName(), false)
-    .addField("UUID", player.getUniqueId().toString(), false)
-    .addField("座標", "X: " + player.getLocation().getBlockX() + " Y: " + player.getLocation().getBlockY() + " Z: " + player.getLocation().getBlockZ(), false)
-    .addField("ディメンション", getDimension(player.getWorld().getEnvironment()), false)
-    .addField("アイテム", item.name(), false)
-    .setFooter("SDA Plugin", null);
+            Bukkit.getLogger().warning(plugin.getMessage("discord-warning"));
+            return;
+        }
 
-    DiscordSRV discordSRV = (DiscordSRV) Bukkit.getPluginManager().getPlugin("DiscordSRV");
-    if (discordSRV != null) {
-    discordSRV.getMainGuild().getTextChannelById(discordChannelId)
-    .sendMessageEmbeds(embed.build()).queue();
-    } else {
-    Bukkit.getLogger().warning("DiscordSRVプラグインが見つかりません！");
-    }
-}
+        String key = player.getUniqueId() + ":" + (item != null ? item.name() : "null") + ":" + action;
+        long currentTime = System.currentTimeMillis();
+        long cooldownMillis = plugin.getNotificationCooldown() * 1000L;
 
-    // アイテムの危険度に応じた色を返すメソッド
-    private Color getEmbedColor(int dangerLevel) {
-    switch (dangerLevel) {
-        case 5:
-            return Color.MAGENTA; // 最高危険度
-        case 4:
-            return Color.RED; // 高危険度
-        case 3:
-            return Color.ORANGE; // 中危険度
-        case 2:
-            return Color.YELLOW; // 低危険度
-        default:
-            return Color.WHITE; 
+        if (lastNotificationTime.containsKey(key) && 
+            currentTime - lastNotificationTime.get(key) < cooldownMillis) {
+            return; // クールダウン中
+        }
+
+        lastNotificationTime.put(key, currentTime);
+
+        EmbedBuilder embed = new EmbedBuilder()
+            .setTitle("SDA Plugin: " + action)
+            .setDescription(plugin.getMessage("dangerous-action"))
+            .setColor(getEmbedColor(dangerLevel))
+            .addField(plugin.getMessage("player-name"), player.getName(), false)
+            .addField(plugin.getMessage("uuid"), player.getUniqueId().toString(), false)
+            .addField(plugin.getMessage("coordinates"), String.format("X: %d Y: %d Z: %d", player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ()), false)
+            .addField(plugin.getMessage("dimension"), getDimension(player.getWorld().getEnvironment()), false)
+            .addField(plugin.getMessage("item"), item != null ? item.name() : "N/A", false)
+            .setFooter("SDA Plugin", null);
+
+        DiscordSRV discordSRV = (DiscordSRV) Bukkit.getPluginManager().getPlugin("DiscordSRV");
+        if (discordSRV != null) {
+            discordSRV.getMainGuild().getTextChannelById(discordChannelId)
+                .sendMessageEmbeds(embed.build()).queue();
+        } else {
+            Bukkit.getLogger().warning(plugin.getMessage("discord-srv-not-found"));
         }
     }
 
-    // プレイヤーの居るディメンションを特定してsendDiscordNotificationのディメンションに反映させるやつです！
-    private String getDimension(org.bukkit.World.Environment environment) {
+    // 危険度に応じた色を返す
+    private java.awt.Color getEmbedColor(int dangerLevel) {
+        switch (dangerLevel) {
+            case 5: return java.awt.Color.MAGENTA;
+            case 4: return java.awt.Color.decode("#800000");
+            case 3: return java.awt.Color.RED;
+            case 2: return java.awt.Color.YELLOW;
+            default: return java.awt.Color.WHITE;
+        }
+    }
+
+    // ディメンション名を返す
+    private String getDimension(World.Environment environment) {
         switch (environment) {
-        case NORMAL:
-            return "オーバーワールド";
-        case NETHER:
-            return "ネザー";
-        case THE_END:
-            return "エンド";
-        default:
-            return "不明";
+            case NORMAL: return plugin.getMessage("overworld");
+            case NETHER: return plugin.getMessage("nether");
+            case THE_END: return plugin.getMessage("end");
+            default: return plugin.getMessage("unknown");
         }
     }
 }

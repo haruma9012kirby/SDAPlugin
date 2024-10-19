@@ -1,0 +1,162 @@
+# 使用する言語を指定します。デフォルトは日本語です。
+# 設定可能な値: ja, en
+# Specify the language to use. The default is Japanese.
+# Possible values: ja, en
+# ┌────────────────────────────────────────────────────────────────────────────
+# │                               警告 / WARNING                          
+# │                                                                       
+# │     言語を変更した場合、config.ymlの値がリセットされます。                    
+# │     If you change the language, the values in config.yml will be reset.             
+# └────────────────────────────────────────────────────────────────────────────
+
+language: ja
+
+#　日本語メッセージ
+# Japanese Message
+messages:
+  ja:
+    plugin-enabled: "SDAプラグインが有効化されました"
+    plugin-disabled: "SDAプラグインが無効化されました"
+    config-reloaded: "設定ファイルがリロードされました！"
+    discord-warning: "警告: config.ymlでDiscordチャンネルIDが設定されていません！"
+    test-message: "テストメッセージを Discord に送信しました！"
+    player-only: "このコマンドはプレイヤーのみが実行できます。"
+    command-execution: "コマンド実行: "
+    dangerous-action: "プレイヤーが危険な行為を行いました。"
+    player-join: "プレイヤー参加"
+    discord-srv-not-found: "DiscordSRVプラグインが見つかりません！"
+    bed-explosion: "ベッド爆破"
+    item-possession: "アイテム所持"
+    block-placement: "ブロック設置"
+    block-ignition: "ブロック着火"
+    lava-bucket-use: "溶岩バケツ使用" 
+    help-on: "プラグインを有効化します"
+    help-off: "プラグインを無効化します"
+    help-reload: "設定ファイルを再読み込みします"
+    help-test: "テストメッセージをDiscordに送信します"
+    overworld: "オーバーワールド"
+    nether: "ネザー"
+    end: "エンド"
+    unknown: "不明"
+    invalid-item-name: "無効なアイテム名: "
+    failed-to-create-default-language-file: "デフォルトのlanguage.ymlを作成できませんでした: "
+    failed-to-replace-config-file: "config.ymlを置き換えできませんでした: "
+    player-name: "プレイヤー名"
+    uuid: "UUID"
+    coordinates: "座標"
+    dimension: "ディメンション"
+    item: "アイテム"
+    title-test-message: "テストメッセージ"
+    config-en: "config-en.ymlを読み込みました"
+    config-jp: "config-jp.ymlを読み込みました"
+    plugin-enabled-debug: "プラグインが有効になりました。"
+    plugin-disabled-debug: "プラグインが無効になりました。"
+    config-reloaded-debug: "設定がリロードされました。"
+    test-message-sent-debug: "テストメッセージが送信されました。"
+    discord-message-sent-debug: "Discordにメッセージが送信されました。"
+    bed-explosion-debug: "ベッド爆破検知"
+    item-possession-debug: "アイテム所持検知"
+    block-placement-debug: "アイテム設置検知"
+    block-ignition-debug: "ブロックの着火検知"
+    lava-bucket-use-debug: "溶岩バケツ使用検知"
+    command-execution-debug: "コマンド実行検知"
+# 英語メッセージ
+# English Message
+  en:
+    plugin-enabled: "SDA Plugin has been enabled"
+    plugin-disabled: "SDA Plugin has been disabled"
+    config-reloaded: "Config file has been reloaded!"
+    discord-warning: "Warning: Discord channel ID is not set in config.yml!"
+    test-message: "Test message sent to Discord!"
+    player-only: "This command can only be executed by players."
+    command-execution: "Command execution: "
+    dangerous-action: "A player performed a dangerous action."
+    player-join: "Player Join"
+    discord-srv-not-found: "DiscordSRV plugin not found!"
+    bed-explosion: "Bed Explosion"
+    item-possession: "Item Possession"
+    block-placement: "Block Placement"
+    block-ignition: "Block Ignition"
+    lava-bucket-use: "Lava Bucket Use"
+    help-on: "Enables the plugin"
+    help-off: "Disables the plugin"
+    help-reload: "Reloads the config file"
+    help-test: "Sends a test message to Discord"
+    overworld: "Overworld"
+    nether: "Nether"
+    end: "End"
+    unknown: "Unknown"
+    invalid-item-name: "Invalid item name: "
+    failed-to-create-default-language-file: "Failed to create default language.yml: "
+    failed-to-replace-config-file: "Failed to replace config.yml: "
+    player-name: "Player Name"
+    uuid: "UUID"
+    coordinates: "Coordinates"
+    dimension: "Dimension"
+    item: "Item"
+    title-test-message: "Test Message"
+    config-en: "config-en.yml loaded"
+    config-jp: "config-jp.yml loaded"
+    plugin-enabled-debug: "Plugin has been enabled."
+    plugin-disabled-debug: "Plugin has been disabled."
+    config-reloaded-debug: "Config has been reloaded."
+    test-message-sent-debug: "Test message has been sent."
+    discord-message-sent-debug: "Message has been sent to Discord."
+    bed-explosion-debug: "Bed Explosion Detection"
+    item-possession-debug: "Item Possession Detection"
+    block-placement-debug: "Block Placement Detection"
+    block-ignition-debug: "Block Ignition Detection"
+    lava-bucket-use-debug: "Lava Bucket Use Detection"
+    command-execution-debug: "Command Execution Detection"
+# =================================================================================
+# 別の言語を使用したい場合、こちらを参考にしながらjaもしくはenを書き換えてください。
+# If you want to use another language, please refer to this and change ja or en.
+# messages:
+#   [language]:
+#     plugin-enabled:
+#     plugin-disabled:
+#     config-reloaded:
+#     discord-warning:
+#     test-message:
+#     player-only:
+#     command-execution:
+#     dangerous-action:
+#     player-join:
+#     discord-srv-not-found:
+#     bed-explosion:
+#     item-possession:
+#     block-placement:
+#     block-ignition:
+#     lava-bucket-use:
+#     help-on:
+#     help-off:
+#     help-reload:
+#     help-test:
+#     overworld:
+#     nether:
+#     end:
+#     unknown:
+#     invalid-item-name:
+#     failed-to-create-default-language-file:
+#     failed-to-replace-config-file:
+#     player-name:
+#     uuid: 
+#     coordinates:
+#     dimension:
+#     item:
+#     title-test-message:
+#     config-en:
+#     config-jp:
+#     plugin-enabled-debug:
+#     plugin-disabled-debug:
+#     config-reloaded-debug:
+#     test-message-sent-debug:
+#     discord-message-sent-debug:
+#     bed-explosion-debug:
+#     item-possession-debug:
+#     block-placement-debug:
+#     block-ignition-debug:
+#     lava-bucket-use-debug:
+#     command-execution-debug:
+# =================================================================================
+# Author: Soryu-haruma(Asl,haruma9012kirby)
