@@ -297,33 +297,45 @@ public class SDAPlugin extends JavaPlugin implements TabCompleter {
     }
 
     private void replaceConfigBasedOnLanguage() {
-        File langFile = new File(getDataFolder(), "language.yml");
-        FileConfiguration langConfig = YamlConfiguration.loadConfiguration(langFile);
+        File languageDir = new File(getDataFolder(), "language");
+        File langFile = new File(languageDir, "language-identifier.txt");
     
-        String currentLanguage = langConfig.getString("language", "ja");  // 現在の言語設定
-        String previousLanguage = langConfig.getString("previous-language", currentLanguage);  // 前回の言語設定
-        boolean configReplaced = langConfig.getBoolean("config-replaced", false); // configファイルが置き換え済みかどうか
+        // ファイルが存在しない場合は作成し、初期言語を設定
+        if (!langFile.exists()) {
+            saveLanguageIdentifier(languageIdentifier);
+        }
     
-        // 言語が変更された場合、もしくはconfigが置き換えられていない場合のみ置き換える
-        if (!currentLanguage.equals(previousLanguage) || !configReplaced) {
-            if (currentLanguage.equals("en")) {
-                languageIdentifier = "en";
+        try {
+            // 前回の言語をファイルから読み込む
+            String previousLanguage = new String(Files.readAllBytes(langFile.toPath()));
+    
+            // 言語が変更された場合のみ、configファイルを置き換える
+            if (!previousLanguage.equals(languageIdentifier)) {
+                replaceConfigFile(languageIdentifier.equals("en") ? "config-en.yml" : "config-jp.yml");
+    
+                // 言語識別ファイルを更新
+                saveLanguageIdentifier(languageIdentifier);
+                logInfo("Config file replaced based on the language change.");
             } else {
-                languageIdentifier = "ja";
+                logInfo("Language has not changed, config file replacement skipped.");
             }
-    
-            // 言語設定の変更を保存
-            langConfig.set("previous-language", currentLanguage);
-            langConfig.set("config-replaced", true); // configが置き換えられたことを記録
-            try {
-                langConfig.save(langFile);
-            } catch (IOException e) {
-                logInfo(String.format("Failed to save language configuration: %s", e.getMessage()));
-            }
-        } else {
-            logInfo("Language has not changed and config was already replaced, skipping config replacement.");
+        } catch (IOException e) {
+            logInfo(String.format("Failed to read language identifier file: %s", e.getMessage()));
         }
     }
+    
+    private void saveLanguageIdentifier(String language) {
+        File languageDir = new File(getDataFolder(), "language");
+        File langFile = new File(languageDir, "language-identifier.txt");
+    
+        try {
+            // 言語識別ファイルを上書き保存
+            Files.write(langFile.toPath(), language.getBytes());
+        } catch (IOException e) {
+            logInfo(String.format("Failed to save language identifier file: %s", e.getMessage()));
+        }
+    }
+    
     private void logAsciiArt() {
         getLogger().info("┌──────────────────────────────────────────────────────────────────────┐");
         getLogger().info("│            ____  ____    _    ____  _             _                  │");
